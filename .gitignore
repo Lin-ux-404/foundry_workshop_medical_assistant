@@ -1,0 +1,37 @@
+# --- Python / backend ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Node / frontend ---
+node_modules/
+dist/
+build/
+.vite/
+npm-debug.log*
+yarn-error.log*
+
+# --- Environment / secrets ---
+.env
+.env.*
+!.env.example
+
+# --- Data (keep synthetic demo data out of git by default) ---
+*.sqlite
+*.sqlite3
+*.db
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- Notebooks ---
+.ipynb_checkpoints/
