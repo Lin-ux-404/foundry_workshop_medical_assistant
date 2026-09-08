@@ -1,7 +1,9 @@
-# Medical-center Foundry workshop plan
+# Foundry notebook workshop plan
 
 **Status:** Design and implementation plan; implementation has not started.
 **Research snapshot:** 2026-09-08. Recheck SDK versions, feature availability, and source permissions before implementation.
+**Scope:** Notebook curriculum, learning assets, exercises, evaluation, and instructor support.
+**Application and Azure services:** [Application and Azure services plan](application-and-azure-plan.md).
 
 ## Purpose and approach
 
@@ -11,7 +13,9 @@ The learning arc is:
 
 **Ask without knowledge -> load documents -> use tools -> retrieve evidence -> reuse knowledge bases -> invoke the same agent through Agent Framework -> evaluate and improve.**
 
-Recommend **nine small notebooks**: orientation, seven focused lessons, and a capstone experiment. Each produces an inspectable artifact and revisits the same questions, documents, and synthetic data. The optional local app presents those artifacts in patient and staff views; building an appointment system is not part of the course.
+Recommend **nine small notebooks**: orientation, seven focused lessons, and a capstone experiment. Each produces an inspectable artifact and revisits the same questions, fictional documents, approved education sources, and historical attendance aggregates. A separate fictional visit fixture supports patient examples without linking it to historical patients.
+
+This document covers only the learning path. UI layouts, the Sage Mist theme, application/backend changes, detailed agent-tool contracts, and Azure resource provisioning are owned by the companion application plan. The notebooks use organizer-prepared services; building an appointment system is not part of the course.
 
 Saving this document does not authorize notebook implementation, application changes, or Azure operations. The implementation roadmap below remains future work.
 
@@ -20,25 +24,26 @@ Saving this document does not authorize notebook implementation, application cha
 | Decision | Agreed boundary |
 | --- | --- |
 | Audience | Mixed technical confidence; one guided notebook path, small blanks, progressive hints, optional technical extensions. |
-| Local runtime | Jupyter, frontend, and backend run locally. |
+| Local runtime | Jupyter and its function callbacks run locally; application runtime is covered by the companion plan. |
 | Azure runtime | Models, service-managed prompt agents, Blob Storage, AI Search, Foundry IQ, and selected cloud evaluation capabilities. |
 | Resources | The organizer supplies Azure resources, permissions, connections, and `.env` configuration. No provisioning/IaC curriculum. |
 | Agents | Foundry prompt agents only. No Foundry hosted-agent/container deployment. |
 | Tools and knowledge | Explicitly compare multiple tool types and at least two reusable knowledge bases. |
 | Medical boundary | Administrative information and sourced general patient education. No diagnosis, personalized test interpretation, clinical triage, prescribing, or patient risk scoring. |
-| Companion app | Lightweight, read-only visualizations and an explanation of what Foundry did. No appointment booking, rescheduling, cancellation, or approval workflows. |
-| Personas | Clearly labelled synthetic patient/staff demo switch. Not authentication or real role-based authorization. |
+| Data use | Original Kaggle no-show cohort for approved aggregate exercises; separate fictional patient visits and procedures. No invented departments, doctors, or future booking times attached to historical rows. |
+| Actions | Read-only administrative answers and calculations. No appointment booking, rescheduling, cancellation, or approval workflows. |
+| Personas | Fictional patient and staff question contexts for learning; not authentication or real role-based authorization. |
 | Evaluation | Specify the learning goals and data contract now; the final Azure evaluation surface remains for the organizer to review. |
 
 ## 2. Research findings that shape the design
 
-### Current repository
+### Notebook starting point
 
-At the research snapshot, the application is a small FastAPI + React/Vite chat starter. Its current `FoundryChatClient` and inline `agent_framework.Agent` definitions call a model; they are **not registered, named/versioned Foundry prompt agents**.
+At the research snapshot, the three `labs\day_*` directories contain README outlines but no notebooks. Blob, Search, IQ, dataset, citation, and evaluation exercises still need implementation.
 
-The three `labs\day_*` directories contain README outlines but no notebooks. Blob, Search, IQ, datasets, citations, evaluation, and persona views are not implemented.
+The existing booking/triage-oriented lab outlines conflict with the agreed read-only, nonclinical course boundary. Replace those exercises rather than building on them.
 
-The existing triage route and booking-oriented lab outlines conflict with the agreed course boundary. Do not build the notebooks on those behaviors. Any later companion-app work must explicitly retire or disable the clinical-triage route, not merely hide it.
+A direct model call through an inline `Agent(client=FoundryChatClient(...))` is not a registered, named/versioned Foundry prompt agent. The lessons must teach the latter, including the same remote agent invoked through Agent Framework.
 
 ### Datasets
 
@@ -46,7 +51,9 @@ The existing triage route and booking-oriented lab outlines conflict with the ag
 - The original Kaggle metadata declares **CC BY-NC-SA 4.0**. Do not assume CC0 because copies elsewhere use that label. Commercial-workshop use and redistribution need review.
 - qacData documents 110,527 rows and 14 fields, but its date descriptions, binary-field assumptions, and some displayed encodings need scrutiny. This is useful for a provenance/data-quality discussion, not an effortless clean fixture.
 - The supplied [triage dataset](https://www.kaggle.com/datasets/aditya9001/triage-data) contains 7,000 rows with `temperature`, `heart_rate`, `resp_rate`, `cough`, `fatigue`, `age`, and `risk`. Its metadata declares MIT but does not establish generation method or clinical label meaning. Exclude it from the core nonclinical course.
-- Use a small, transparent, workshop-authored synthetic appointment fixture by default. Retain the no-show source as an optional aggregate-only provenance exercise after rights/privacy review.
+- Use the organizer-prepared, versioned projection of the original Kaggle no-show cohort for the attendance exercises, after rights/privacy review. The source has 110,527 appointment rows, including 22,319 marked `No-show = Yes`; the overall rate is approximately 20.2%. These are historical appointments, not a live patient schedule.
+- Keep raw identifiers and health/social attributes out of agent context and knowledge indexes. Teach exact counts through bounded aggregate tools, with a separate fictional visit fixture for patient questions.
+- The shared field definitions, date/denominator rules, quality exclusions, and Blob snapshot contract live in the application plan. Notebook helpers must reuse those rules, not invent departments or silently replace the cohort with synthetic data. Small synthetic fixtures can illustrate a calculation if they are explicitly labelled and never presented as source results.
 
 ### Documents
 
@@ -75,7 +82,7 @@ Keep general explanatory sections, source attribution, and section-level provena
 
 Use the supplied participant workshop as the main scaffolding influence: instructor-provided `.env`, small participant tasks, namespaced artifacts, explicit completion criteria, and ownership-aware cleanup.
 
-Use Microsoft Learn's "ask before grounding, add knowledge, ask again, inspect the citation" teaching pattern. Use the Foundry webapp's visible tool/annotation/approval events as UI inspiration, not its full C#/Entra/deployment stack.
+Use Microsoft Learn's "ask before grounding, add knowledge, ask again, inspect the citation" teaching pattern. Adapt the Foundry webapp's visible tool/annotation events into notebook evidence cells, not its full C#/Entra/deployment stack.
 
 Do not copy older agentic-ai-lab SDK code or fixed-index deletion behavior. The current `foundry-samples` prompt-agent folder includes advanced identity/skills and custom-interpreter examples; its folder name alone does not make every sample suitable for a prompt-agent-only beginner course.
 
@@ -86,14 +93,14 @@ Retain the existing day folders as navigation groups, without prescribing worksh
 | Notebook | Location | Learning outcome | Visible result |
 | --- | --- | --- | --- |
 | 00. Welcome and connections | `labs\day_1\00_welcome_and_connections.ipynb` | Explain what runs locally versus Azure and load the supplied environment. | Capability/readiness map without secret values. |
-| 01. Documents, data, and Blob | `labs\day_1\01_documents_and_blob.ipynb` | Distinguish a document from a structured dataset; upload/read approved assets. | Blob round trip, source manifest, synthetic appointment summary. |
+| 01. Documents, data, and Blob | `labs\day_1\01_documents_and_blob.ipynb` | Distinguish a document from a structured dataset; read prepared data and upload approved fictional assets where permitted. | Source manifest, historical aggregate summary, and a Blob round trip or labelled read-only variant. |
 | 02. A real Foundry prompt agent | `labs\day_1\02_prompt_agents.ipynb` | Understand model + instructions + tools, Agent Service, versions, and conversations. | Named/versioned remote agent and an ungrounded baseline. |
-| 03. Give the agent tools | `labs\day_1\03_tools_and_structured_data.ipynb` | Observe function request, local execution, and returned output. | Exact synthetic counts and a tool-call record; optional chart. |
+| 03. Give the agent tools | `labs\day_1\03_tools_and_structured_data.ipynb` | Observe function request, local execution, and returned output. | Exact attendance counts, snapshot evidence, and a tool-call record; optional chart. |
 | 04. Search and grounded answers | `labs\day_2\04_search_and_grounded_answers.ipynb` | Inspect chunks/indexes, compare retrieval, attach Azure AI Search as a tool. | Ranked evidence and actual source citations. |
 | 05. Knowledge bases and Foundry IQ | `labs\day_2\05_knowledge_bases_and_foundry_iq.ipynb` | Use and reuse two KBs; distinguish agent tool selection from retrieval planning. | Correct KB/source selection and cited multi-source answers. |
 | 06. The same agent through Agent Framework | `labs\day_3\06_agent_framework.ipynb` | Invoke an existing prompt-agent version through the Framework client. | Equivalent behavior, sessions, and observable tool events. |
 | 07. Evaluate and improve | `labs\day_3\07_evaluate_and_improve.ipynb` | Compare configurations with a fixed question set and review failures. | Per-case evaluation table and a reproducible improvement experiment. |
-| 08. Explain your experiment | `labs\day_3\08_workshop_experiments.ipynb` | Change one setting, replay the scenario, and explain the effect. | Experiment record, evidence, and optional companion-app presentation. |
+| 08. Explain your experiment | `labs\day_3\08_workshop_experiments.ipynb` | Change one setting, replay the scenario, and explain the effect. | Reproducible experiment record and a notebook-based evidence presentation. |
 
 ### 00. Welcome and connections
 
@@ -101,7 +108,7 @@ Introduce the fictional center, two personas, and three anchor questions:
 
 - "What should I bring to my first visit at this center?"
 - "What is a complete blood count?"
-- "How many synthetic appointments are shown for each department?"
+- "What fraction of appointments in the historical cohort were marked no-show?"
 
 Have learners predict whether each needs a policy document, patient-education document, or structured-data tool.
 
@@ -111,13 +118,13 @@ No resource creation, role assignment, Azure app hosting, or model download. No 
 
 ### 01. Documents, data, and Blob
 
-Inputs: six small fictional policies, three approved medical-education documents, one synthetic appointment CSV, and a source manifest.
+Inputs: six small fictional policies, three approved medical-education documents, the prepared attendance projection and audit/manifest, and a separate fictional visit fixture. The original licensed CSV remains organizer-only; participants consume the approved curated snapshot and aggregate results.
 
-Learner blanks: select the document category, destination prefix, and useful metadata. Upload only to the designated workshop prefix, read the object back, and inspect title/source/version/hash.
+Learner blanks: select the document category, approved destination prefix, and useful metadata. Read the prepared objects and inspect source/version/hash. With supplied authoring permissions, upload an approved fictional document only to the designated exercise scope and read it back. If the supplied identity is read-only, use the explicitly labelled prepared-object variant instead; do not grant writes to shared snapshots just to complete a cell.
 
 Explain that Blob upload alone does not index content or teach an agent anything. Contrast "documents for retrieval" with "rows for calculation."
 
-Keep the data lesson small. An optional side cell can discuss the supplied historical no-show data's provenance and field-quality problems without turning the workshop into a predictive-model course.
+Keep the data lesson small: inspect the label mapping, denominator, source dates, and one quality warning. Explain that an SMS-flag comparison is observational, not evidence that reminders cause or prevent missed visits. This is not a predictive-model or patient-risk-scoring course.
 
 ### 02. A real Foundry prompt agent
 
@@ -131,13 +138,15 @@ Agent Service is taught here as the Azure service managing the agent; it does no
 
 ### 03. Give the agent tools
 
-Core exercise: declare a read-only function such as `get_appointment_summary(department)` on the remote prompt agent. Supply its bounded Python implementation locally, reading the synthetic Azure Blob fixture through the shared data helper.
+Core exercise: declare `get_attendance_summary` on the remote prompt agent and supply its bounded Python implementation locally, reading the approved attendance snapshot from Azure Blob through the shared data helper.
 
-Learner blanks: tool description, a constrained parameter schema, and the intended aggregation. Make the agent request the function, inspect arguments, validate them, execute the allowlisted function, and return the result to the service.
+Learner blanks: tool description, an allowlisted filter/schema field, and the intended aggregation. Make the agent request the function, inspect arguments, validate them, execute the allowlisted function, and return the result to the service. Foundry does not call a laptop's localhost endpoint directly; the notebook handles the callback and submits its output.
+
+Reuse the four contracts defined in the [application plan](application-and-azure-plan.md): `get_attendance_summary`, `compare_attendance_groups`, `explain_attendance_data`, and `get_demo_visit_brief`. After completing the first tool, participants inspect supplied implementations of the others and predict which fits a comparison, a provenance question, or a fictional visit question. Do not duplicate or expand the application schemas just for a lesson.
 
 Contrast a KB answer with a deterministic numeric answer. Use a finite tool-call loop and visible errors; do not allow arbitrary file paths, SQL, URLs, or patient identifiers.
 
-Optional Code Interpreter cells upload the small synthetic summary and request a chart in Azure's managed interpreter. Inspect the returned file reference and independently compare totals. This is a managed tool on a prompt agent, not a Foundry hosted-agent deployment. State model/region prerequisites and additional charges.
+Optional Code Interpreter cells upload only a small approved aggregate summary, not raw appointment rows, and request a chart in Azure's managed interpreter. Inspect the returned file reference and independently compare totals. This is a managed tool on a prompt agent, not a Foundry hosted-agent deployment. State model/region prerequisites and additional charges.
 
 Optional File Search cells can contrast managed file/vector-store grounding with the more explicit Search/IQ path. Do not introduce a second full ingestion curriculum.
 
@@ -200,7 +209,7 @@ Start with a hand-reviewed set of approximately 12 concise cases, not automatica
 
 Each case records expected behavior, expected tool/KB, and expected source IDs. Capture the actual answer, exact available context, citations, tool inputs/outputs, agent version, corpus version, and retrieval settings.
 
-Compare a baseline with one deliberate improvement. Keep the question set and corpus fixed; show failures and disagreements, not only an average score.
+Compare a baseline with one deliberate improvement. Keep the question set, corpus, attendance snapshot, and fictional fixture version fixed; show failures and disagreements, not only an average score. Include no-data handling, exact no-show counts, and rejection of causal SMS claims without implying a clinical assessment.
 
 Proposed measurement layers:
 
@@ -223,7 +232,7 @@ Let each participant choose one change: prompt wording, tool description, retrie
 
 They predict the result, publish an owned checkpoint, replay the same cases, inspect evidence, and explain what changed. Save an experiment manifest that another clean kernel can replay.
 
-The notebook is the required presentation surface. A small local companion view is optional, not a prerequisite for completing the course.
+The notebook is the required presentation surface. Demonstrating the separately planned application is optional and is not a prerequisite for completing the course.
 
 ## 4. Repeated notebook format and supporting files
 
@@ -263,6 +272,8 @@ labs\
 
 Exact helper boundaries should stay small during implementation. Reuse existing configuration conventions, and preserve the user's existing `backend\.env.example` content.
 
+The `synthetic` folder contains only explicit teaching/fictional fixtures, not a replacement attendance cohort. Historical data is loaded from the supplied versioned Blob snapshot; do not commit the original licensed CSV to the notebook scaffolding.
+
 The organizer-supplied configuration covers existing project/model, Blob destination, Search indexes/connections, KB/MCP references, API version, and optional judge deployment. Agent versions and experiment results belong in a nonsecret workshop manifest, not scattered manual `.env` edits.
 
 Every notebook supports a fresh kernel and explicit artifact loading. No reliance on another notebook's live variables.
@@ -271,7 +282,7 @@ Writable artifacts require an explicit participant namespace and ownership recor
 
 ## 5. Shared artifact contract
 
-Use one small versioned contract for notebook outputs and any later app integration:
+Use one small versioned contract for notebook learning outputs. Application-specific request/response schemas and the four tool contracts stay in the companion plan:
 
 | Artifact | Essential fields |
 | --- | --- |
@@ -279,6 +290,7 @@ Use one small versioned contract for notebook outputs and any later app integrat
 | Chunk | Chunk/document ID, section/page, content, source reference, version, namespace, active status. |
 | Retrieval | Query, retrieval mode, KB/source/index reference, actual returned hits/references, optional service score/activity. |
 | Agent run | Run/conversation reference, agent name/version, answer, citations, observable tool events, persona, corpus version. |
+| Structured-data result | Tool name, validated filters, exact counts/denominators, warnings, dataset/fixture version, snapshot/ETag/hash evidence. |
 | Evaluation | Case ID, expected behavior/tool/sources, observed output/context, evaluator version/results, human notes. |
 | Workshop checkpoint | Schema version, namespace, resource references, corpus version, active agent versions, output artifact references. |
 
@@ -286,30 +298,14 @@ Sources with uncertain rights remain link-only/excluded. Do not upload original 
 
 Show only observed tool calls, data, and service events. Never fabricate a trace, citation, query decomposition, score, or live-result status.
 
-## 6. Bounded companion-app proposal
-
-This is a separate supporting scope, not a reason to delay notebook design.
-
-| View | Proposed content |
-| --- | --- |
-| Patient demo | A few synthetic appointment cards, plain-language assistant, source citations, explicit educational/synthetic notice. |
-| Staff/admin demo | Aggregate appointment chart, document/chunk inspector, selected tool/KB, remote agent name/version, evaluation comparison. |
-| Shared learning panel | "What Foundry did": observable steps and evidence, plus whether the result is live or a saved example. |
-
-Potential seams are `backend\clients\foundry_client.py`, `backend\agents\patient_assistant.py`, `backend\routers\chat.py`, `backend\schemas.py`, `frontend\src\api.ts`, `frontend\src\App.tsx`, and `frontend\src\components\Chat.tsx`.
-
-The current app does not read notebook artifacts or remote prompt-agent versions. A later narrow adapter and response-schema extension must be implemented before claiming notebook changes automatically update the app.
-
-Keep persona handling a constrained synthetic demo context. Do not add real sign-in, claim document ACL enforcement, build a database application, or expose medical-triage behavior.
-
-## 7. Implementation todos and dependencies
+## 6. Implementation todos and dependencies
 
 The following are future implementation tasks, not work already performed or authorized by saving this plan.
 
 | ID | Todo | Depends on |
 | --- | --- | --- |
-| `workshop-contract` | Establishing the curriculum/configuration/artifact contract and a small compatible SDK set, preserving instructor-owned resources. | None |
-| `workshop-assets` | Authoring synthetic fixtures and fictional procedures; preparing approved education text with a source/rights manifest and question labels. | `workshop-contract` |
+| `workshop-contract` | Establishing the curriculum/configuration/artifact contract and a small compatible SDK set, reusing the application plan's data/tool rules and prepared instructor-owned resources. | None |
+| `workshop-assets` | Authoring fictional fixtures/procedures and approved education text; preparing source/rights manifests and question labels that reference the approved attendance snapshot. | `workshop-contract` |
 | `notebook-scaffold` | Creating the shared notebook helpers, lesson template, progressive hints, instructor-solution convention, and fresh-kernel artifact loading. | `workshop-contract` |
 | `notebooks-foundations` | Implementing notebooks 00-03: connections, Blob, prompt agents/Agent Service, and bounded tool calling. | `workshop-assets`, `notebook-scaffold` |
 | `notebooks-knowledge` | Implementing notebooks 04-05: inspectable Search RAG, two reusable IQ KBs, MCP, and explicit capability boundaries. | `notebooks-foundations` |
@@ -318,22 +314,22 @@ The following are future implementation tasks, not work already performed or aut
 | `notebook-capstone` | Implementing notebook 08 and updating lab navigation/instructor notes around the final course. | `evaluation-design` |
 | `workshop-rehearsal` | Rehearsing completed solutions from fresh kernels against supplied Azure resources and checking evidence, replay, and owned-artifact cleanup. | `notebook-capstone` |
 
-The optional companion-app enhancement is not included in the core notebook implementation queue. Its small scope can be approved separately once the notebook artifact contract is stable.
+Prepared Azure services, the approved Blob snapshot, and compatible bounded tool helpers are external prerequisites supplied by the organizer through the application/Azure workstream. Notebook authors consume those contracts rather than independently provisioning resources or implementing competing metric definitions.
 
-## 8. Completion criteria
+## 7. Completion criteria
 
 - All requested products appear in a coherent story: Blob, Search, prompt agents, Agent Service, Framework, IQ, and evaluation.
 - Participants demonstrate at least three distinct tool paths: managed Search, a client-executed read-only function, and a remote KB MCP tool.
 - Two KBs are actually referenced and reused; multi-source claims retain distinct citations.
 - Each notebook contains meaningful blanks, hints, visible expected artifacts, and a corresponding instructor solution.
 - Completed solutions run from clean kernels with explicit state loading; no invisible dependence on previous live notebook sessions.
-- Core examples use only approved fictional/synthetic data and attributed permitted education content.
-- No provisioning, hosted agents, real identity integration, appointment mutation, or clinical decision-making is required.
+- Attendance examples use only the approved aggregate-facing historical snapshot; patient examples remain fictional, and education content is attributed and permitted. Raw identifiers are never sent to the agent.
+- No provisioning, hosted agents, end-user login, appointment mutation, or clinical decision-making is required. Supplied Azure development authentication is still necessary.
 - Live results, saved examples, unavailable features, and failed calls are visibly distinguishable.
 - Cleanup touches only owned learning artifacts and never deletes shared indexes, knowledge bases, connections, storage accounts, or resource groups.
 - Evaluation comparisons use fixed cases and report limitations; the organizer's final evaluation-product decision is recorded before its implementation is treated as complete.
 
-## 9. Source references
+## 8. Source references
 
 These references preserve the research trail without depending on session-local files. Product documentation and sample repositories can change; use the research snapshot as context, not a guarantee of future API compatibility.
 

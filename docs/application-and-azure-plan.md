@@ -3,7 +3,7 @@
 **Status:** Design proposal, not implemented.
 **Research snapshot:** 2026-09-08.
 **Scope:** Patient/admin UI, application behavior, Azure services, data ingestion, and agent-tool contracts.
-**Notebook curriculum:** [Foundry workshop plan](foundry-workshop-plan.md).
+**Notebook curriculum:** [Foundry notebook workshop plan](notebook-workshop-plan.md).
 
 This document owns application and infrastructure decisions. Lesson sequencing, fill-in-the-blank exercises, instructor solutions, and educational evaluation design belong in the linked notebook plan. The notebooks consume the prepared services and data contracts described here; participants do not provision the shared infrastructure as a lesson.
 
@@ -318,7 +318,7 @@ Distinguish `no_data`, invalid input, unsupported definitions, expired/missing s
 
 Register the definitions on the named/versioned Foundry prompt agent and map the names to local Python callables through the selected Projects/Agent Framework adapter. The backend executes calls under its own Azure identity and submits tool outputs to Foundry. Foundry does not directly call localhost, and attaching a CSV to Blob does not automatically teach an agent its contents.
 
-The existing Search/IQ document-retrieval path can be added later for a larger procedure/education corpus. It is separate from these four drafted function tools and is not required just to compute statistics from the CSV.
+The planned Search/IQ document-retrieval path can be added later for a larger procedure/education corpus. It is separate from these four drafted function tools and is not required just to compute statistics from the CSV.
 
 The agent should explain numbers, definitions, and limitations. It should not recalculate a metric differently in prose, infer the cause of a missed visit, fabricate missing data, or label an individual as likely to miss an appointment.
 
@@ -426,6 +426,8 @@ Give the uploader **Storage Blob Data Contributor** only on the relevant contain
 
 The local backend uses `DefaultAzureCredential` with a deliberately selected development identity. If the same organizer identity is used for both ingestion and runtime, its effective rights are the union of its assignments: do not falsely call that principal read-only. Keep the tool/path allowlist regardless; use a separate read-only development identity where practical.
 
+Notebook authoring permissions are separate from the read-only application-runtime contract. The organizer must explicitly supply an appropriate exercise scope before a lesson writes fictional assets. Without it, use the notebook's labelled prepared-object/read-only variant; a blob-name prefix alone is not an Entra authorization boundary.
+
 No login screen is added to the demo. Developer Azure authentication is separate from a patient-facing login. If the backend is hosted on Azure in a later scope, use a managed identity rather than a stored key.
 
 ### Ingestion and versioning
@@ -473,6 +475,8 @@ This section identifies requirements, not code to execute during design.
 | Chat response | Reply, observed citations/tool evidence, context/snapshot echo, agent/version metadata, explicit error states. |
 
 Prefer extending the existing chat response while retaining its `reply` field. Do not pretend the current reply-only API already provides citations or tool events.
+
+The current app does not read notebook checkpoints or inherit changes to remote agent versions automatically. An optional notebook-to-app presentation needs an explicit adapter that loads a supported checkpoint schema and the selected agent name/version, dataset snapshot, and corpus references. Until that exists, the notebook remains the independent presentation surface.
 
 Frontend client code submits context identifiers and filters, not trusted chart totals. Backend functions compute the authoritative values. Use the same calculation layer for the dashboard and agent to avoid conflicting numbers.
 
