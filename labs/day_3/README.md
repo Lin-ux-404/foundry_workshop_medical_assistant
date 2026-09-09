@@ -1,21 +1,21 @@
-# Day 3 - Compare, improve, and explore
+# Day 3 - Out of scope
 
-**Goal:** Use a few understandable observations to decide what to improve.
+Evaluation, fine-tuning, tool calling and guardrails are covered elsewhere and
+are not authored in this repository.
 
-| Planned notebook | Topics | Activity |
-| --- | --- | --- |
-| `07_evaluate_and_improve.ipynb` | Answer quality, Foundry evaluation, latency, token usage, tool calling, fine-tuning | Compare 5-8 inline questions before and after one change. Inspect a prepared base-versus-tuned example. |
-| `08_app_experiments.ipynb` | Hands-on app/playground exploration and explaining an experiment | Try a supplied demo, change one variable in a standalone notebook example, and write a short explanation of the result. |
+| Notebook | Status |
+| --- | --- |
+| `07_evaluate_and_improve.ipynb` | Placeholder. No content. |
+| `08_app_experiments.ipynb` | Placeholder. No content. |
 
-Each notebook includes its own setup, examples, and comparison code. Observations
-stay in notebook cells; no checkpoint files, manifests, test suite, or earlier
-notebook outputs are required.
+The files exist so the folder layout stays stable and whoever owns these topics
+has a place to write. They are deliberately blank rather than outlined: a
+skeleton that reads like a lesson but is not one is harder to replace than an
+empty file, and easy to mistake for finished work.
 
-Fine-tuning is a guided topic, not a required live training job. The organizer
-supplies a running demo or Foundry playground. The medical app is optional;
-participants do not build or deploy an application.
-
-**Explain it back:** Would you improve the prompt, retrieval, tool description,
-or model training? What evidence supports that choice?
+If you are writing one, the authoring conventions the other labs follow are in
+the [full curriculum](../../docs/notebook-workshop-plan.md), and
+[Lab 5](../day_2/05_knowledge_bases_and_foundry_iq.ipynb) is a worked example
+of the structure.
 
 [Full curriculum](../../docs/notebook-workshop-plan.md) | [All days](../README.md)
