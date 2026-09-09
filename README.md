@@ -17,24 +17,32 @@ including a **structured-output** example. Everything else in the brief is yours
   - Pydantic request/response and structured-output models (`schemas.py`),
   - config via environment variables (`config.py`).
 - `frontend/` Vite + React + TypeScript chat UI that calls `/api/chat`.
-- `labs/` a [three-day Foundry notebook workshop](labs/README.md), with four
+- `labs/` a three-day Foundry notebook workshop, with four
   Day 1 notebooks implemented. The application is not a prerequisite.
 
 ## What you build
 
-Work through the [notebooks](labs/README.md) to learn Foundry
-through small independent examples:
+Work through the notebooks in `labs/` to learn Foundry through small
+independent examples. Each one runs from a fresh kernel and depends on nothing
+before it.
 
-- **Day 1:** deploy a model, deploy a prompt agent, use AI Search, and coordinate agents with Agent Framework.
-- **Day 2:** connect Foundry IQ knowledge bases and explore guardrails.
-- **Day 3:** compare quality, performance and tool calling; understand fine-tuning; explore a supplied app or playground.
+| Notebook | You implement |
+| --- | --- |
+| `day_1/01_deploy_a_model.ipynb` | Deploy a model, complete a Responses call, move standing rules into `instructions` |
+| `day_1/02_prompt_agents.ipynb` | Write an agent role, save two versions, build the `agent_reference` |
+| `day_1/03_search_and_grounded_answers.ipynb` | Query AI Search, describe the index, write the grounding rule |
+| `day_1/04_agent_framework_orchestration.ipynb` | Connect to a saved agent and order a sequential workflow |
+| `day_2/05_knowledge_bases_and_foundry_iq.ipynb` | Reach a Foundry IQ knowledge base over MCP |
+
+Labs 6 to 8 are empty placeholders. Guardrails, evaluation, fine-tuning and
+tool calling are covered elsewhere.
 
 The notebooks do not require medical datasets, shared helper packages, or changes
 to the starter application. Application development remains a separate workstream.
 
 ## Prerequisites
 
-- Python 3.10+ and Node 18+
+- Python 3.11+ (the notebooks check this and stop on older kernels) and Node 18+
 - An Azure AI Foundry project with a deployed chat model (e.g. `gpt-4o-mini`)
 - Azure CLI: run `az login` (the backend uses `DefaultAzureCredential`, no API keys)
 
