@@ -5,7 +5,11 @@
 **Scope:** Patient/admin UI, application behavior, Azure services, data ingestion, and agent-tool contracts.
 **Notebook curriculum:** [Foundry notebook workshop plan](notebook-workshop-plan.md).
 
-This document owns application and infrastructure decisions. Lesson sequencing, fill-in-the-blank exercises, instructor solutions, and educational evaluation design belong in the linked notebook plan. The notebooks consume the prepared services and data contracts described here; participants do not provision the shared infrastructure as a lesson.
+This document owns application and infrastructure decisions. The linked notebook
+curriculum is a separate, general Foundry workshop: its notebooks do not depend
+on this application's data, tool contracts, or backend. This application may be
+used as an optional Day 3 demonstration. Participants do not implement this plan
+or provision shared infrastructure as a notebook lesson.
 
 ## 1. Recommendation
 
@@ -392,7 +396,10 @@ Avoid migrating the application to Next.js or importing a complete template. A l
 | Foundry evaluation | Score captured, versioned responses when the organizer selects the final evaluation surface. | Reuse approved project/judge configuration; do not create an additional service or assume the product decision is settled. |
 | Local React/Vite and FastAPI | Present the two views, calculate aggregates, read Blob with Entra credentials, and execute function callbacks. | No new Azure app-hosting resource, database, Function App, or public MCP server is required for this slice. |
 
-The new Blob workstream below is concrete. Additional Search/IQ provisioning and evaluation configuration must follow their selected feature/API requirements before the corresponding notebooks run; this document does not claim those resources already exist.
+The new Blob workstream below is concrete. Additional application Search/IQ
+provisioning and evaluation configuration must follow their selected feature/API
+requirements; this document does not claim those resources already exist.
+The independent workshop has its own small, organizer-prepared examples.
 
 ### Provision one dedicated resource
 
@@ -476,7 +483,10 @@ This section identifies requirements, not code to execute during design.
 
 Prefer extending the existing chat response while retaining its `reply` field. Do not pretend the current reply-only API already provides citations or tool events.
 
-The current app does not read notebook checkpoints or inherit changes to remote agent versions automatically. An optional notebook-to-app presentation needs an explicit adapter that loads a supported checkpoint schema and the selected agent name/version, dataset snapshot, and corpus references. Until that exists, the notebook remains the independent presentation surface.
+The app and notebooks have independent configurations. Day 3 may explore the
+running app, but notebook edits do not automatically change it. No notebook
+checkpoint or configuration-transfer adapter is part of the simplified
+curriculum; changing the app remains separate application work.
 
 Frontend client code submits context identifiers and filters, not trusted chart totals. Backend functions compute the authoritative values. Use the same calculation layer for the dashboard and agent to avoid conflicting numbers.
 
