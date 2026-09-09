@@ -17,18 +17,20 @@ including a **structured-output** example. Everything else in the brief is yours
   - Pydantic request/response and structured-output models (`schemas.py`),
   - config via environment variables (`config.py`).
 - `frontend/` Vite + React + TypeScript chat UI that calls `/api/chat`.
-- `labs/` per-day lab stubs. `notebooks` for guided exercises can live here too.
+- `labs/` a [three-day Foundry notebook workshop](labs/README.md), with four
+  Day 1 notebooks implemented. The application is not a prerequisite.
 
 ## What you build
 
-Use the hackathon brief. In short:
+Follow the [notebook curriculum](docs/notebook-workshop-plan.md) to learn Foundry
+through small independent examples:
 
-- **Day 1** give agents real tools (availability + booking), persist to SQLite, show appointments to an admin.
-- **Day 2** ground answers with **Foundry IQ** + Azure AI Search; add a Medical Knowledge Agent with citations.
-- **Day 3** add **workflows** (Patient Intake, Appointment Booking, Priority Scheduling) and split into specialized agents.
+- **Day 1:** deploy a model, deploy a prompt agent, use AI Search, and coordinate agents with Agent Framework.
+- **Day 2:** connect Foundry IQ knowledge bases and explore guardrails.
+- **Day 3:** compare quality, performance and tool calling; understand fine-tuning; explore a supplied app or playground.
 
-Suggested folders to add as you go: `agents/`, `workflows/`, `knowledge/`, `data/`,
-`models/`, `tests/` (see the brief's repository structure).
+The notebooks do not require medical datasets, shared helper packages, or changes
+to the starter application. Application development remains a separate workstream.
 
 ## Prerequisites
 
