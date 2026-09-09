@@ -10,7 +10,7 @@ hints and solutions.
 | --- | --- | --- |
 | [Lab 1 - Deploy a model](01_deploy_a_model.ipynb) | Model versus deployment, deployment versus training, the Responses API | Deploy an approved model, complete the request, then split the standing rules out of the question into `instructions`. |
 | [Lab 2 - Deploy a prompt agent](02_prompt_agents.ipynb) | Named and versioned agents, agent references, conversations | Write the agent's role, build the `agent_reference`, then save a second version and prove the first did not change. |
-| [Lab 3 - Ground an agent in AI Search](03_search_and_grounded_answers.ipynb) | Indexes, chunks, retrieval, tools, grounding, citations | Complete a Search query, describe the index the agent should search, and write the grounding rule it must follow. |
+| [Lab 3 - Ground an agent in AI Search](03_search_and_grounded_answers.ipynb) | Index fields, chunks, retrieval, tools, grounding, citations | Define the index schema, run a Search query, describe the index the agent should search, and write the grounding rule it must follow. |
 | [Lab 4 - Coordinate agents](04_agent_framework_orchestration.ipynb) | Remote agents versus local orchestration, sequential workflows | Write two distinct roles, connect to a saved version, then set the workflow's participant order and output selection. |
 
 Allow roughly 45 to 55 minutes per notebook, plus breaks and discussion. Custom
@@ -20,7 +20,7 @@ later days.
 ## Start here
 
 Use Python 3.12 or later with a dedicated notebook environment and a Jupyter or
-VS Code kernel. Run `az login` in a terminal with your workshop account. Open a
+VS Code kernel. Run `az login` in a terminal with the account that owns your subscription. Open a
 notebook and work down its cells with **Shift+Enter**. Each notebook installs
 its own packages; restart the kernel if you changed packages after importing.
 
@@ -44,23 +44,25 @@ variables. No `.env` file or repository configuration loader is required.
 Never paste a credential into a cell or leave one in an output.
 
 Lab 1's portal steps are the part that actually teaches deployment; its Python
-cells call a deployment rather than creating one. Labs 2, 3 and 4 create prompt
-agents when you run their creation cells. Repeat calls cost budget, and repeat
-creation cells create additional versions. No notebook deletes Azure resources.
+cells call the deployment you just made. Labs 2, 3 and 4 create prompt agents
+when you run their creation cells, and running a creation cell again adds a
+version rather than replacing one. Lab 3 deletes the index it created; agents
+are small and stay in your project until you remove them from the portal.
 
 ## Prerequisites
 
-Your instructor supplies an existing Foundry project, a model that supports the
-Responses API, deployment and agent permissions, quota and budget. Model
-deployment can be instructor-led when participants cannot create one.
-Agent-authoring permission is required for the hands-on parts of Labs 2 to 4.
+You need an Azure subscription with a Foundry project, permission to deploy a
+model that supports the Responses API, and permission to author agents. Lab 1
+walks you through the deployment itself.
 
-Lab 3 additionally needs `AZURE_SEARCH_ENDPOINT`, `AZURE_SEARCH_INDEX_NAME` and
-`AZURE_SEARCH_CONNECTION_NAME`, the last being the connection name inside the
-Foundry project. Its collapsible instructor section lists the three embedded
-documents and the index fields to prepare. Core retrieval uses keyword search;
-the hybrid comparison is an optional extension needing a vector field and an
-integrated vectorizer. The index is shared and read-only for participants.
+Lab 3 also needs an Azure AI Search service and its
+`AZURE_SEARCH_ENDPOINT`, `AZURE_SEARCH_INDEX_NAME` and
+`AZURE_SEARCH_CONNECTION_NAME` settings, the last being the connection name
+inside the Foundry project. You build the index in the notebook from three
+short documents defined there, so you need **Search Service Contributor** and
+**Search Index Data Contributor** on the service. Core retrieval uses keyword
+search; the hybrid comparison is an optional extension needing a vector field
+and an integrated vectorizer.
 
 Lab 4 needs no Search resource. It passes its own source notes through two
 distinct Foundry agents. Its install cell pins the compatible SDK versions.

@@ -18,10 +18,10 @@ remain plans.
 Each lesson carries its own package setup, configuration, authentication,
 example data, SDK calls, exercises and hints. Read the concept, complete a
 **To-Do**, then run the deterministic check that proves what you built.
-Day 1 uses marked `...` code blanks with hints and collapsible solutions;
-it is not a sequence of finished examples to run unchanged.
+The notebooks use marked `...` code blanks with hints and collapsible
+solutions; they are not a sequence of finished examples to run unchanged.
 
-Azure lessons still need organizer-provided resources, access and an approved
-budget. Each notebook lists only its own prerequisites. Examples use small
-fictional FAQs or session information, not real patient data. The existing app
-is an optional Day 3 demo, not a dependency.
+You need your own Azure subscription and a Foundry project. Each notebook lists
+its own prerequisites and cleans up what it creates. Examples use a small
+fictional orders API, not real patient data. The existing app is an optional
+Day 3 demo, not a dependency.

@@ -13,12 +13,27 @@ tools, and infrastructure plan are not prerequisites for the notebooks.
 Each notebook teaches one main idea: **understand the concept -> predict ->
 complete the implementation -> observe -> explain**.
 
-Use a small, fictional workshop-helpdesk example where continuity is helpful:
-an event FAQ, a session catalog, and questions about sessions. Put the few
-example records or document strings directly in the relevant notebook.
-Other simple examples are welcome when they explain a capability better.
-There is no mandatory domain, real dataset, document-licensing exercise, or
-application to build.
+Use a small, fictional **internal HTTP service** as the running example: an
+orders API with a rate limit, token expiry, status codes, and a short incident
+runbook. Keep examples technical. Do not dress a lesson up as event logistics,
+office trivia, or any other non-technical scenario -- the reader is here to
+learn Foundry, and a contrived setting adds reading for no teaching value.
+Put the few example records or document strings directly in the relevant
+notebook. There is no mandatory domain, real dataset, document-licensing
+exercise, or application to build.
+
+### Write for one reader with their own subscription
+
+Address a single reader who owns the subscription and does the work themselves.
+They create their own project, deploy their own model, build their own index,
+and clean up after themselves. Do not write around a classroom: no instructor,
+facilitator, or organizer supplies values; no resource is described as shared;
+no step is deferred to somebody else's setup. Where a resource must exist
+before the notebook runs, show how to create it in a collapsible section.
+
+Do not warn the reader about spending, budget, or shared quota. State a cost or
+latency trade-off only where it is genuine engineering guidance, such as the
+effect of `top_k` on retrieval.
 
 Give participants small implementation tasks, not only finished code to run.
 After a short explanation, ask them to complete meaningful SDK settings, agent
@@ -106,12 +121,8 @@ small instead of adding infrastructure, ingestion pipelines, or application work
 | --- | --- | --- | --- |
 | `01_deploy_a_model.ipynb` | Model versus deployment; deployment versus training; `instructions` versus `input`. | Deploy an approved model in the portal, complete a Responses call, then move the standing rules out of the question and into `instructions`. | Two answers from one deployment, with token usage. |
 | `02_prompt_agents.ipynb` | Named, versioned Foundry prompt agents; agent references; conversations; version immutability. | Write the agent's role and save version 1, build the `agent_reference`, then save version 2 and prove version 1 is unchanged. | One agent, two versions, and a conversation follow-up. |
-| `03_search_and_grounded_answers.ipynb` | Indexes, chunks, keyword/vector/hybrid retrieval, tools, grounding, citations. | Complete a direct Search query, describe the index in `AISearchIndexResource`, and write the grounding rule the agent must follow. | A baseline answer, retrieved passages, a cited grounded answer, and an honest gap answer. |
+| `03_search_and_grounded_answers.ipynb` | Index fields and analyzers, chunks, keyword/vector/hybrid retrieval, tools, grounding, citations. | Define the index schema, run a direct Search query, describe the index in `AISearchIndexResource`, and write the grounding rule the agent must follow. | A baseline answer, retrieved passages, a cited grounded answer, and an honest gap answer. |
 | `04_agent_framework_orchestration.ipynb` | Remote agents versus local orchestration; sequential workflows; participants, outputs, and events. | Write two distinct roles, connect to a saved version with `FoundryAgent`, then set the workflow's participant order and output selection. | Workflow events in order plus both participants' output. |
-
-Notebook 01 includes a facilitator-led deployment variant when participant
-permissions or quota do not permit creation. Invoking a prepared deployment is
-not presented as creating one.
 
 Orientation is folded into notebook 01 rather than a separate notebook.
 Day 1 stays focused on these four topics: no additional custom-function,
@@ -120,11 +131,12 @@ evaluation, app-building, or data-engineering lesson.
 Notebook 02 uses a few fictional facts directly in its instructions. No function
 schemas or callback loop are needed to teach agent deployment and versioning.
 
-Notebook 03 uses a few original fictional FAQ documents. Show their text inline
-even when the searchable copy is organizer-prepared in Azure. Explain
-**Blob/file -> index -> retrieval -> answer**, but make storage uploads and
-index provisioning instructor setup, not a second engineering project.
-Label a direct Search query separately from an agent's retrieval activity.
+Notebook 03 creates its own index from three short reference documents defined
+in the notebook, so the reader sees field design and indexing rather than
+inheriting a prepared resource. Explain **document -> index -> retrieval ->
+answer**. Label a direct Search query separately from an agent's retrieval
+activity, and call out that the reader's identity and the project connection's
+identity are different.
 
 Notebook 04 runs an actual Microsoft Agent Framework workflow with two distinct
 remote prompt agents. It includes its own agent setup and input documents; it
@@ -138,21 +150,22 @@ automatically better.
 
 | Notebook | Main topics | Small hands-on activity | Visible result |
 | --- | --- | --- | --- |
-| `05_knowledge_bases_and_foundry_iq.ipynb` | Foundry IQ; knowledge sources and KBs; MCP; agent tool choice versus retrieval planning. | Connect a newly configured agent to two small prepared KBs: event information and session information. Ask a single-source, a combined, and an unknown-answer question. | The selected knowledge/tool, returned source references, and an honest unknown answer. |
-| `06_guardrails.ipynb` | Instructions versus enforced controls; Foundry content controls; retrieved-content boundaries; local tool validation. | Predict and run a few supplied benign cases against an instructor-approved configuration, including one harmless question that should still work. | A small table: expected outcome, observed outcome, and the control evidenced by the result. |
+| `05_knowledge_bases_and_foundry_iq.ipynb` | Foundry IQ; knowledge sources and knowledge bases; MCP; agent tool choice versus retrieval planning. | Connect an agent to a knowledge base holding two small sources. Ask a single-source, a combined, and an unknown-answer question. | The selected tool, returned source references, and an honest unknown answer. |
+| `06_guardrails.ipynb` | Instructions versus enforced controls; Foundry content controls; retrieved-content boundaries; local tool validation. | Predict and run a few benign cases against a referenced guardrail configuration, including one harmless question that should still work. | A small table: expected outcome, observed outcome, and the control evidenced by the result. |
 
-Notebook 05 supplies all agent/MCP connection code and references in its own
-setup cell. Reuse one KB from a second simple agent to demonstrate that knowledge
-belongs to a reusable resource, not to one assistant.
+Notebook 05 supplies its own agent and knowledge-base connection code. Reuse one
+knowledge base from a second agent to demonstrate that knowledge belongs to a
+reusable resource, not to one assistant.
 
 Notebook 06 defines its own small read-only tool and example inputs. Distinguish
 a model refusal, a platform filter event, and an argument-validation error.
-Do not ask participants to disable shared protections or invent harmful prompts.
+Use benign cases only. Never ask a reader to weaken protections or compose
+harmful prompts.
 
-The organizer confirms feature, model, region, and permission support before
-class. If a cloud feature is unavailable, show a clearly labelled instructor
-demonstration or saved example and state that the live activity was not run.
-Direct Search is not silently relabelled as Foundry IQ.
+Confirm feature, model, and region support before relying on a lesson. If a
+cloud feature is unavailable, say plainly that the live activity was not run
+rather than substituting a lookalike. Direct Search is never relabelled as
+Foundry IQ.
 
 ## 5. Day 3: evaluation, improvement, and app exploration
 
@@ -173,12 +186,12 @@ invent cost or treat a classroom sample as a production benchmark.
 Fine-tuning remains a taught topic, not a prerequisite training job. Explain
 **better instructions versus better retrieval versus training on examples**.
 Inspect a few fictional training examples, separate training and held-out
-examples, and compare prepared base/tuned outputs. Live training is an optional,
-budget-approved instructor extension.
+examples, and compare prepared base/tuned outputs. Running a real training job
+is optional and sits outside the lesson.
 
-Notebook 08 is hands-on exploration, not app development or deployment.
-The organizer supplies a working demo or playground. The repository's medical
-app is optional; understanding medicine is not a learning objective.
+Notebook 08 is hands-on exploration, not app development or deployment. Work
+against a playground or a small running demo. The repository's medical app is
+optional; understanding medicine is not a learning objective.
 Notebook changes do not automatically update an app. Record observations in a
 Markdown cell, not a checkpoint system or experiment-manifest format.
 
@@ -244,8 +257,8 @@ labs/
 ```
 
 The four Day 1 notebooks exist under `labs/day_1/`; Day 2 and Day 3 filenames
-remain authoring targets. Keep instructor notes, hints, and suggested solutions
-inside each notebook.
+remain authoring targets. Keep hints and suggested solutions inside each
+notebook, in collapsible sections.
 
 ## 8. Short Microsoft Learn reading path
 
@@ -264,6 +277,6 @@ Place a short original explanation beside the link in each notebook.
 | Evaluation and tool calling | [Built-in evaluators](https://learn.microsoft.com/en-us/azure/foundry/concepts/built-in-evaluators) and [agent evaluators](https://learn.microsoft.com/en-us/azure/foundry/concepts/evaluation-evaluators/agent-evaluators) |
 | Fine-tuning | [Fine-tuning considerations](https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/fine-tuning-considerations) |
 
-The organizer checks current SDK compatibility, links, feature availability,
-permissions, and spending limits before delivery. These checks belong to
-preparation; they should not dominate the participant notebooks.
+Re-check SDK compatibility, links, feature availability, and permissions
+whenever these notebooks are revised. Those checks belong to authoring; they
+should not dominate what the reader sees.
