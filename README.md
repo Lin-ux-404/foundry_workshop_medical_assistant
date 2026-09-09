@@ -17,22 +17,32 @@ including a **structured-output** example. Everything else in the brief is yours
   - Pydantic request/response and structured-output models (`schemas.py`),
   - config via environment variables (`config.py`).
 - `frontend/` Vite + React + TypeScript chat UI that calls `/api/chat`.
-- `labs/` per-day lab stubs. `notebooks` for guided exercises can live here too.
+- `labs/` a three-day Foundry notebook workshop, with four
+  Day 1 notebooks implemented. The application is not a prerequisite.
 
 ## What you build
 
-Use the hackathon brief. In short:
+Work through the notebooks in `labs/` to learn Foundry through small
+independent examples. Each one runs from a fresh kernel and depends on nothing
+before it.
 
-- **Day 1** give agents real tools (availability + booking), persist to SQLite, show appointments to an admin.
-- **Day 2** ground answers with **Foundry IQ** + Azure AI Search; add a Medical Knowledge Agent with citations.
-- **Day 3** add **workflows** (Patient Intake, Appointment Booking, Priority Scheduling) and split into specialized agents.
+| Notebook | You implement |
+| --- | --- |
+| `day_1/01_deploy_a_model.ipynb` | Deploy a model, complete a Responses call, move standing rules into `instructions` |
+| `day_1/02_prompt_agents.ipynb` | Write an agent role, save two versions, build the `agent_reference` |
+| `day_1/03_search_and_grounded_answers.ipynb` | Query AI Search, describe the index, write the grounding rule |
+| `day_1/04_agent_framework_orchestration.ipynb` | Connect to a saved agent and order a sequential workflow |
+| `day_2/05_knowledge_bases_and_foundry_iq.ipynb` | Reach a Foundry IQ knowledge base over MCP |
 
-Suggested folders to add as you go: `agents/`, `workflows/`, `knowledge/`, `data/`,
-`models/`, `tests/` (see the brief's repository structure).
+Labs 6 to 8 are empty placeholders. Guardrails, evaluation, fine-tuning and
+tool calling are covered elsewhere.
+
+The notebooks do not require medical datasets, shared helper packages, or changes
+to the starter application. Application development remains a separate workstream.
 
 ## Prerequisites
 
-- Python 3.10+ and Node 18+
+- Python 3.11+ (the notebooks check this and stop on older kernels) and Node 18+
 - An Azure AI Foundry project with a deployed chat model (e.g. `gpt-4o-mini`)
 - Azure CLI: run `az login` (the backend uses `DefaultAzureCredential`, no API keys)
 
