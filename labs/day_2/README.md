@@ -1,18 +1,39 @@
-# Day 2 - Knowledge and controls
+# Day 2 - Knowledge
 
-**Goal:** Understand reusable knowledge and observe where controls act.
+**Goal:** Give an agent reusable knowledge through Foundry IQ.
 
-| Planned notebook | Topics | Activity |
+| Notebook | Topics | What you implement |
 | --- | --- | --- |
-| `05_knowledge_bases_and_foundry_iq.ipynb` | Foundry IQ, knowledge sources, KBs, MCP, source selection | Query two small prepared knowledge bases; compare single-source, combined, and unknown-answer questions. Reuse one KB with another agent. |
-| `06_guardrails.ipynb` | Instructions, Foundry content controls, retrieved content, tool validation | Predict a few benign cases, run them, and distinguish a refusal, a filter event, and a local validation error. |
+| [Lab 5 - Knowledge bases and Foundry IQ](05_knowledge_bases_and_foundry_iq.ipynb) | Knowledge sources, knowledge bases, agentic retrieval, MCP tools, project connections | Build the `MCPTool` that reaches the knowledge base, write the retrieval rules, then point a second agent at the same knowledge base. |
+| `06_guardrails.ipynb` | Guardrails | Placeholder. Content is owned elsewhere. |
 
-Each notebook includes its own setup, agent configuration, examples, code,
-and hints. No Day 1 notebook output or shared Python module is required.
-The organizer supplies supported IQ resources and approved guardrail settings;
-participants do not disable shared protections.
+Allow roughly 45 to 60 minutes for Lab 5.
 
-**Explain it back:** How is a KB different from an agent? What does a guardrail
-control, and what does it not guarantee?
+## Start here
+
+Same rhythm as Day 1: read the concept, predict the outcome, fill the `...`
+blanks marked `# TODO`, run the cell, then read what came back. A
+**Deterministic success check** at the end prints `PASS - ...` once you have
+built the right thing.
+
+Run `az login` before you start, and set `AZURE_AI_PROJECT_ENDPOINT` and
+`AZURE_AI_MODEL_DEPLOYMENT_NAME` in the notebook or your environment. Never
+paste a credential into a cell.
+
+## Prerequisites
+
+Lab 5 needs the Foundry project and model deployment from Day 1, plus
+permission to author agents. You do not need any output or saved agent from a
+Day 1 notebook: the lab creates what it uses.
+
+Lab 5 also needs an Azure AI Search service with a knowledge base, and a
+project connection that lets the agent call it. The knowledge base is built
+with `azure-search-documents`, not `azure-ai-projects`, and the connection is
+created in the portal or with an ARM call. Both steps are written out in a
+collapsible section in the notebook, along with `AZURE_SEARCH_ENDPOINT`,
+`AZURE_KNOWLEDGE_BASE_NAME` and `AZURE_PROJECT_CONNECTION_ID`.
+
+**Explain it back:** Where does a knowledge base live, and why is that not the
+agent? What has to exist before an agent can call one?
 
 [Full curriculum](../../docs/notebook-workshop-plan.md) | [All days](../README.md)

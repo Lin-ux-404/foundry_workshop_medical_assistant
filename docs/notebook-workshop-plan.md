@@ -1,12 +1,14 @@
 # Microsoft Foundry: three-day notebook workshop
 
-**Status:** Day 1 implemented as four notebooks; Days 2 and 3 remain planned.
+**Status:** Day 1 implemented as four notebooks, plus Lab 5 on Day 2.
+Evaluation, fine-tuning, tool calling and guardrails are out of scope here and
+are covered elsewhere; those notebooks exist as empty placeholders.
 **Audience:** Beginners; no application-development or machine-learning background required.
 **Goal:** Understand Foundry's main capabilities by running small, independent examples.
 
 This is a technology workshop, not a medical application project. The existing
-medical-assistant app can be one Day 3 demonstration, but its backend, datasets,
-tools, and infrastructure plan are not prerequisites for the notebooks.
+medical-assistant app in this repository is not a prerequisite for any
+notebook, and neither are its backend, datasets, tools or infrastructure plan.
 
 ## 1. Keep the workshop simple
 
@@ -106,8 +108,8 @@ questions with a collapsible comparison, and an **Expected artifact:** line.
 | Day | Topics | What participants can explain afterward |
 | --- | --- | --- |
 | **1: Build the foundations** | Models and deployment; prompt agents; Azure AI Search and RAG; Microsoft Agent Framework and multi-agent orchestration. | How a model, an agent, retrieval, and an agent workflow differ. |
-| **2: Add knowledge and controls** | Foundry IQ; reusable knowledge bases; MCP tool connections; guardrails and content controls. | How agents use knowledge and where controls can act. |
-| **3: Compare and explore** | Evaluations; answer quality; latency and token usage; tool calling; fine-tuning; hands-on app exploration. | How to compare alternatives and decide what to improve. |
+| **2: Add knowledge** | Foundry IQ; reusable knowledge bases; MCP tool connections. | How an agent reaches knowledge that lives outside it. |
+| **3: Out of scope** | Evaluation, fine-tuning, tool calling and guardrails are covered elsewhere. | - |
 
 Plan around a short explanation and demonstration followed by hands-on work.
 Reserve discussion and break time. Day 1 has the most topics: keep its examples
@@ -144,56 +146,37 @@ does not load agents, answers, or checkpoints from notebooks 02 or 03.
 Pass source references along when the example uses sources. More agents are not
 automatically better.
 
-## 4. Day 2: Foundry IQ and guardrails
+## 4. Day 2: Foundry IQ
 
-**Outcome:** Connect agents to reusable knowledge and observe simple controls.
+**Outcome:** Connect agents to reusable knowledge.
 
 | Notebook | Main topics | Small hands-on activity | Visible result |
 | --- | --- | --- | --- |
-| `05_knowledge_bases_and_foundry_iq.ipynb` | Foundry IQ; knowledge sources and knowledge bases; MCP; agent tool choice versus retrieval planning. | Connect an agent to a knowledge base holding two small sources. Ask a single-source, a combined, and an unknown-answer question. | The selected tool, returned source references, and an honest unknown answer. |
-| `06_guardrails.ipynb` | Instructions versus enforced controls; Foundry content controls; retrieved-content boundaries; local tool validation. | Predict and run a few benign cases against a referenced guardrail configuration, including one harmless question that should still work. | A small table: expected outcome, observed outcome, and the control evidenced by the result. |
+| `05_knowledge_bases_and_foundry_iq.ipynb` | Foundry IQ; knowledge bases and knowledge sources; agentic retrieval; MCP tools and project connections. | Build the `MCPTool` for a knowledge base holding two sources, write the retrieval rules, then point a second agent at the same knowledge base. | Tool calls visible in `response.output`, a combined-source answer, an honest gap answer, and two agents sharing one resource. |
+| `06_guardrails.ipynb` | Out of scope. Placeholder file only. | - | - |
 
-Notebook 05 supplies its own agent and knowledge-base connection code. Reuse one
-knowledge base from a second agent to demonstrate that knowledge belongs to a
-reusable resource, not to one assistant.
-
-Notebook 06 defines its own small read-only tool and example inputs. Distinguish
-a model refusal, a platform filter event, and an argument-validation error.
-Use benign cases only. Never ask a reader to weaken protections or compose
-harmful prompts.
+Notebook 05 reaches the knowledge base through `MCPTool` against the search
+service's `/knowledgebases/<name>/mcp` endpoint, authenticated by a project
+connection. Knowledge bases are created with `azure-search-documents`, not
+`azure-ai-projects`; show that setup in a collapsible section and say so
+plainly, because readers will otherwise look for an API that does not exist.
+Reuse one knowledge base from a second agent to demonstrate that knowledge
+belongs to a reusable resource, not to one assistant.
 
 Confirm feature, model, and region support before relying on a lesson. If a
 cloud feature is unavailable, say plainly that the live activity was not run
 rather than substituting a lookalike. Direct Search is never relabelled as
 Foundry IQ.
 
-## 5. Day 3: evaluation, improvement, and app exploration
+## 5. Day 3: out of scope
 
-**Outcome:** Compare two approaches using a few understandable observations.
+Evaluation, fine-tuning, tool calling and guardrails are covered elsewhere and
+are not authored here. `06_guardrails.ipynb`, `07_evaluate_and_improve.ipynb`
+and `08_app_experiments.ipynb` exist as empty placeholders so the file layout
+is stable and whoever owns those topics has a place to write.
 
-| Notebook | Main topics | Small hands-on activity | Visible result |
-| --- | --- | --- | --- |
-| `07_evaluate_and_improve.ipynb` | Answer quality; Foundry evaluation; latency; available token usage; correct tool selection/arguments; fine-tuning. | Run 5-8 inline questions, inspect a simple score table, change one instruction or tool description, and compare. Review a small prepared base-versus-tuned example. | Before/after observations and a reasoned improvement choice. |
-| `08_app_experiments.ipynb` | Using an agent through an app; connecting workshop concepts; explaining an experiment. | Try a supplied running demo or Foundry playground, then use an independent model/agent example in this notebook to change one variable. | A short written account of what changed, what improved, and what remained uncertain. |
-
-Notebook 07 contains its own questions, expected tool choices, tiny tool, agent
-setup, and comparison code. Start with human review; introduce one supported
-Foundry evaluation surface rather than an evaluation-adapter architecture.
-Inspect relevance/groundedness or agent-evaluation results where supported.
-Measure elapsed time directly; show token usage only when returned. Do not
-invent cost or treat a classroom sample as a production benchmark.
-
-Fine-tuning remains a taught topic, not a prerequisite training job. Explain
-**better instructions versus better retrieval versus training on examples**.
-Inspect a few fictional training examples, separate training and held-out
-examples, and compare prepared base/tuned outputs. Running a real training job
-is optional and sits outside the lesson.
-
-Notebook 08 is hands-on exploration, not app development or deployment. Work
-against a playground or a small running demo. The repository's medical app is
-optional; understanding medicine is not a learning objective.
-Notebook changes do not automatically update an app. Record observations in a
-Markdown cell, not a checkpoint system or experiment-manifest format.
+Do not partially fill a placeholder. An outline that looks like a lesson but
+is not one is worse than an obviously empty file.
 
 ## 6. What "self-contained notebook" means
 
@@ -255,16 +238,16 @@ labs/
   day_2/
     README.md
     05_knowledge_bases_and_foundry_iq.ipynb
-    06_guardrails.ipynb
+    06_guardrails.ipynb        (placeholder)
   day_3/
     README.md
-    07_evaluate_and_improve.ipynb
-    08_app_experiments.ipynb
+    07_evaluate_and_improve.ipynb   (placeholder)
+    08_app_experiments.ipynb        (placeholder)
 ```
 
-The four Day 1 notebooks exist under `labs/day_1/`; Day 2 and Day 3 filenames
-remain authoring targets. Keep hints and suggested solutions inside each
-notebook, in collapsible sections.
+Labs 1 to 5 are authored. The three placeholders hold their filenames so the
+layout is stable for whoever writes them. Keep hints and suggested solutions
+inside each notebook, in collapsible sections.
 
 ## 8. Short Microsoft Learn reading path
 
@@ -279,9 +262,6 @@ Place a short original explanation beside the link in each notebook.
 | Search and RAG | [RAG overview](https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview) |
 | Agent Framework | [Sequential orchestration](https://learn.microsoft.com/en-us/agent-framework/workflows/orchestrations/sequential) |
 | Foundry IQ | [Foundry IQ overview](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/what-is-foundry-iq) |
-| Guardrails | [Guardrails and controls](https://learn.microsoft.com/en-us/azure/foundry/guardrails/guardrails-overview) |
-| Evaluation and tool calling | [Built-in evaluators](https://learn.microsoft.com/en-us/azure/foundry/concepts/built-in-evaluators) and [agent evaluators](https://learn.microsoft.com/en-us/azure/foundry/concepts/evaluation-evaluators/agent-evaluators) |
-| Fine-tuning | [Fine-tuning considerations](https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/fine-tuning-considerations) |
 
 Re-check SDK compatibility, links, feature availability, and permissions
 whenever these notebooks are revised. Those checks belong to authoring; they
