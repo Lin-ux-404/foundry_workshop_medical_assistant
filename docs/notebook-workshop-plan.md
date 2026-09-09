@@ -201,11 +201,17 @@ Every notebook must run from a fresh kernel on its own, given the Azure
 resources listed at its top. **Independent does not mean offline**: a Search or
 IQ lesson still needs its Azure service.
 
+**Target Python 3.11 or later.** Do not use syntax or standard-library
+additions from a later version, such as PEP 695 generics or
+`itertools.batched`. Each setup cell checks `sys.version_info` and stops with a
+readable message, because the alternative is a `SyntaxError` from an
+unfamiliar SDK that tells a beginner nothing.
+
 Each notebook includes, in order:
 
 1. **What will you do:** The goal, why the capability exists, a `text` flow diagram, and a numbered roadmap.
 2. **New words:** A short glossary of the terms the lesson uses, defined before they appear in code.
-3. **Before you start:** Prerequisites, how the To-Do sections work, and cost or permission warnings.
+3. **Before you start:** Prerequisites, including the Python floor, and how the To-Do sections work.
 4. **Setup:** The package-install cell, imports, authentication, clearly marked resource settings, and the `check_todos` helper.
 5. **Teaching sections:** For each idea, a markdown cell that explains the concept, compares the options in a table, states the **Run the cell. You should see** contract, and sets one **To-Do** with a goal, steps, a hint, and a collapsible solution. Then one code cell.
 6. **Deterministic success check:** Assertions on structure, ending in `print("PASS - ...")`.
@@ -230,7 +236,7 @@ bound tool execution, reject unsupported arguments, display errors honestly,
 and never delete shared Azure resources. Do not build a validation framework.
 
 During authoring, fill the blanks with the supplied solutions and run the
-notebook top to bottom in a fresh kernel. Then run it again with the blanks
+notebook top to bottom in a fresh kernel on the oldest supported Python. Then run it again with the blanks
 left open and confirm it stops at the first To-Do without calling Azure.
 Keep the distributed notebook's blanks and empty outputs. This is practical
 rehearsal, not a separate formal testing curriculum.

@@ -19,7 +19,7 @@ later days.
 
 ## Start here
 
-Use Python 3.12 or later with a dedicated notebook environment and a Jupyter or
+Use Python 3.11 or later with a dedicated notebook environment and a Jupyter or
 VS Code kernel. Run `az login` in a terminal with the account that owns your subscription. Open a
 notebook and work down its cells with **Shift+Enter**. Each notebook installs
 its own packages; restart the kernel if you changed packages after importing.
