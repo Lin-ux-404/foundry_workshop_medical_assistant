@@ -9,8 +9,8 @@ its technologies, not building a medical application.
 | 2 | Foundry IQ, knowledge bases, MCP | [Day 2](day_2/README.md) |
 | 3 | Out of scope here; covered elsewhere | [Day 3](day_3/README.md) |
 
-See the [curriculum](../docs/notebook-workshop-plan.md) for activities and learning
-outcomes. **Five notebooks are implemented: Labs 1 to 4 on Day 1, and Lab 5 on
+Each day's README lists its activities and learning outcomes. **Five notebooks
+are implemented: Labs 1 to 4 on Day 1, and Lab 5 on
 Day 2.** Evaluation, fine-tuning, tool calling and guardrails are covered
 elsewhere, so Labs 6, 7 and 8 are empty placeholder files.
 

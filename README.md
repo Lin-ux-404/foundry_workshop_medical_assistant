@@ -22,7 +22,7 @@ including a **structured-output** example. Everything else in the brief is yours
 
 ## What you build
 
-Follow the [notebook curriculum](docs/notebook-workshop-plan.md) to learn Foundry
+Work through the [notebooks](labs/README.md) to learn Foundry
 through small independent examples:
 
 - **Day 1:** deploy a model, deploy a prompt agent, use AI Search, and coordinate agents with Agent Framework.

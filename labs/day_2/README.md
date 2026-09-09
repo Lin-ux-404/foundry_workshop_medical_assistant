@@ -36,4 +36,4 @@ collapsible section in the notebook, along with `AZURE_SEARCH_ENDPOINT`,
 **Explain it back:** Where does a knowledge base live, and why is that not the
 agent? What has to exist before an agent can call one?
 
-[Full curriculum](../../docs/notebook-workshop-plan.md) | [All days](../README.md)
+[All days](../README.md)

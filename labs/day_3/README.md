@@ -13,9 +13,7 @@ has a place to write. They are deliberately blank rather than outlined: a
 skeleton that reads like a lesson but is not one is harder to replace than an
 empty file, and easy to mistake for finished work.
 
-If you are writing one, the authoring conventions the other labs follow are in
-the [full curriculum](../../docs/notebook-workshop-plan.md), and
-[Lab 5](../day_2/05_knowledge_bases_and_foundry_iq.ipynb) is a worked example
-of the structure.
+If you are writing one, [Lab 5](../day_2/05_knowledge_bases_and_foundry_iq.ipynb)
+is a worked example of the structure the other labs follow.
 
-[Full curriculum](../../docs/notebook-workshop-plan.md) | [All days](../README.md)
+[All days](../README.md)

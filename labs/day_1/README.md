@@ -67,5 +67,4 @@ and an integrated vectorizer.
 Lab 4 needs no Search resource. It passes its own source notes through two
 distinct Foundry agents. Its install cell pins the compatible SDK versions.
 
-See the [workshop overview](../README.md) and the
-[notebook workshop plan](../../docs/notebook-workshop-plan.md).
+See the [workshop overview](../README.md).
