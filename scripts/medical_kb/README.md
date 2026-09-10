@@ -45,7 +45,7 @@ Requires `az`, `curl`, `jq`, `envsubst`, and a Python with `requests` +
 | Foundry project connection (`RemoteTool`) | `who-kb-mcp` |
 
 Reused, never modified: the search service, `umcdevstorage`, and the Foundry
-account with its `text-embedding-3-large` and `gpt-5.4-nano` deployments.
+account with its `text-embedding-3-large` and `gpt-5.6-luna` deployments.
 
 ## Design notes
 

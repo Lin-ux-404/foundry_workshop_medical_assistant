@@ -18,8 +18,8 @@ export FOUNDRY_PROJECT="${FOUNDRY_PROJECT:-umc-hackathon-devbox}"
 export EMBEDDING_DEPLOYMENT="${EMBEDDING_DEPLOYMENT:-text-embedding-3-large}"
 export EMBEDDING_MODEL="${EMBEDDING_MODEL:-text-embedding-3-large}"
 export EMBEDDING_DIMENSIONS="${EMBEDDING_DIMENSIONS:-3072}"
-export CHAT_DEPLOYMENT="${CHAT_DEPLOYMENT:-gpt-5.4-nano}"
-export CHAT_MODEL="${CHAT_MODEL:-gpt-5.4-nano}"
+export CHAT_DEPLOYMENT="${CHAT_DEPLOYMENT:-gpt-5.6-luna}"
+export CHAT_MODEL="${CHAT_MODEL:-gpt-5.6-luna}"
 
 # --- Objects created by this project ---
 export BLOB_CONTAINER="${BLOB_CONTAINER:-who-guidelines}"

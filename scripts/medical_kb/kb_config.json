@@ -25,7 +25,7 @@
     "projectEndpoint": "https://umc-hackathon-devbox-resource.cognitiveservices.azure.com/api/projects/umc-hackathon-devbox",
     "embeddingDeployment": "text-embedding-3-large",
     "embeddingDimensions": 3072,
-    "chatDeployment": "gpt-5.4-nano",
+    "chatDeployment": "gpt-5.6-luna",
     "kbConnection": "who-kb-mcp"
   },
   "storage": {
