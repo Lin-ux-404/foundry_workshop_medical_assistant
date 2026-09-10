@@ -26,6 +26,7 @@ Requires `az`, `curl`, `jq`, `envsubst`, and a Python with `requests` +
 | `02_upload_blobs.sh` | Creates the container and uploads with citation metadata (`--auth-mode login`). |
 | `03_create_search_pipeline.sh` | Create-or-update of all six search objects. |
 | `04_verify.py` | Ingestion, chunk-content, and retrieval checks. Exits nonzero on failure. |
+| `05_connect_kb_to_foundry.sh` | Creates the `who-kb-mcp` project connection so agents can call the KB. |
 | `documents.json` | The document manifest: titles, WHO page URLs, PDF URLs, topics. |
 | `kb_config.json` | Non-secret endpoints and names for the notebook to consume. |
 | `search_objects/*.json` | REST payload templates (`${VAR}` placeholders rendered by `envsubst`). |
@@ -41,6 +42,7 @@ Requires `az`, `curl`, `jq`, `envsubst`, and a Python with `requests` +
 | Indexer | `who-guidelines-indexer` |
 | Knowledge source (`searchIndex`) | `who-guidelines-ks` |
 | Knowledge base | `umc-medical-kb` |
+| Foundry project connection (`RemoteTool`) | `who-kb-mcp` |
 
 Reused, never modified: the search service, `umcdevstorage`, and the Foundry
 account with its `text-embedding-3-large` and `gpt-5.4-nano` deployments.
@@ -77,3 +79,17 @@ account with its `text-embedding-3-large` and `gpt-5.4-nano` deployments.
 `references[].sourceData` from `/retrieve` carries `document_title`, `source_url`,
 `publisher`, `publication_id`, `topic`, `metadata_storage_name`, `chunk`, and
 `chunk_id`. Answers cite chunks inline as `[ref_id:N]`, indexing into `references[]`.
+- **Connecting the KB to an agent.** An agent reaches the knowledge base over MCP, not
+  over the `/retrieve` REST endpoint. `05_connect_kb_to_foundry.sh` creates a
+  `RemoteTool` project connection targeting
+  `{search}/knowledgebases/{kb}/mcp?api-version=2026-08-01-preview` with
+  `authType: ProjectManagedIdentity` and `audience: https://search.azure.com/`.
+  Three things reliably go wrong: `MCPTool` needs **both** `server_url` and
+  `project_connection_id`; `project_connection_id` takes the connection **name**, not
+  its ARM id; and an older `api-version` in the connection target fails tool
+  enumeration with HTTP 406. The **project** managed identity - which is not the
+  account identity - also needs `Search Index Data Reader`, otherwise the first tool
+  call returns 403. `00_assign_roles.sh` assigns it.
+- **`retrievalReasoningEffort` must be `low` or `medium`.** `auto` is accepted by the
+  direct `/retrieve` endpoint but rejected by agent retrieval with
+  `InvalidAgentRetrievalRequest`.

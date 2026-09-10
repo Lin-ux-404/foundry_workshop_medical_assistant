@@ -17,7 +17,7 @@
   "outputMode": "answerSynthesis",
   "retrievalInstructions": "Answer clinical questions using only the WHO guideline passages returned by the knowledge source. Prefer passages whose document_title matches the condition named in the question.",
   "answerInstructions": "Answer in at most 120 words. Lead with the direct answer in one or two sentences. Add short bullets only for specifics the lead sentence does not already state, and omit the bullets entirely if they would repeat it. Do not use headings, bold section titles, or preamble. State every claim once and cite it as [ref_id:N]. Do not discuss what the retrieved passages do or do not contain, do not describe your own process, and do not offer follow-up help. If the guidelines do not cover the question, say so in one sentence. Do not give individual patient-specific medical advice.",
-  "retrievalReasoningEffort": { "kind": "auto" },
+  "retrievalReasoningEffort": { "kind": "low" },
   "retrieveDefaults": {
     "maxOutputDocuments": 20,
     "maxRuntimeInSeconds": 120

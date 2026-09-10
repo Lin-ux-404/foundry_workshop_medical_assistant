@@ -14,12 +14,12 @@ az account set --subscription "$SUBSCRIPTION_ID"
 
 step() { printf '\n=== %s\n' "$1"; }
 
-step "0/5 role assignments"        ; "$HERE/00_assign_roles.sh"
-step "1/5 download WHO PDFs"       ; "$HERE/01_download_docs.sh"
-step "2/5 upload to blob storage"  ; "$HERE/02_upload_blobs.sh"
-step "3/5 create search pipeline"  ; "$HERE/03_create_search_pipeline.sh"
+step "0/6 role assignments"        ; "$HERE/00_assign_roles.sh"
+step "1/6 download WHO PDFs"       ; "$HERE/01_download_docs.sh"
+step "2/6 upload to blob storage"  ; "$HERE/02_upload_blobs.sh"
+step "3/6 create search pipeline"  ; "$HERE/03_create_search_pipeline.sh"
 
-step "4/5 run ingestion"
+step "4/6 run ingestion"
 status_of() { search_call GET "/indexers/${INDEXER}/status" | sed '$d'; }
 
 s="$(status_of)"
@@ -45,7 +45,10 @@ for _ in $(seq 1 80); do
 done
 jq -r '"  status=\(.lastResult.status) processed=\(.lastResult.itemsProcessed) failed=\(.lastResult.itemsFailed) warnings=\(.lastResult.warnings|length)"' <<<"$s"
 
-step "5/5 verify"
+step "5/6 connect the knowledge base to Foundry"
+"$HERE/05_connect_kb_to_foundry.sh"
+
+step "6/6 verify"
 PY="${PYTHON:-$REPO_ROOT/.venv/bin/python}"
 [[ -x "$PY" ]] || PY=python3
 SEARCH_SERVICE="$SEARCH_SERVICE" SEARCH_API_VERSION="$SEARCH_API_VERSION" \

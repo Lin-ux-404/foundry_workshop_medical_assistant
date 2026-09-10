@@ -24,6 +24,11 @@ assign() { # principalId role scope label
 assign "$SEARCH_MI" "Storage Blob Data Reader"  "$STORAGE_SCOPE" "search MI -> Storage Blob Data Reader"        ServicePrincipal
 assign "$SEARCH_MI" "Cognitive Services User"   "$FOUNDRY_SCOPE" "search MI -> Cognitive Services User"          ServicePrincipal
 
+# Foundry project managed identity -> call the knowledge base's /retrieve over MCP.
+PROJECT_MI=$(az resource show --ids "$PROJECT_RESOURCE_ID" --api-version 2025-06-01 \
+  --query identity.principalId -o tsv)
+assign "$PROJECT_MI" "Search Index Data Reader" "$SEARCH_SCOPE" "project MI -> Search Index Data Reader" ServicePrincipal
+
 # Operator -> manage search objects, upload blobs, and call /retrieve.
 assign "$ME" "Search Service Contributor"     "$SEARCH_SCOPE"  "me -> Search Service Contributor"     User
 assign "$ME" "Search Index Data Contributor"  "$SEARCH_SCOPE"  "me -> Search Index Data Contributor"  User

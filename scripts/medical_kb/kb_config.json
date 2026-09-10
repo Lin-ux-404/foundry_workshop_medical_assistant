@@ -14,7 +14,9 @@
     "indexer": "who-guidelines-indexer",
     "knowledgeSource": "who-guidelines-ks",
     "knowledgeBase": "umc-medical-kb",
-    "retrieveUrl": "https://umc-hackathon-devbox-fiq-search.search.windows.net/knowledgebases/umc-medical-kb/retrieve?api-version=2026-08-01-preview"
+    "retrieveUrl": "https://umc-hackathon-devbox-fiq-search.search.windows.net/knowledgebases/umc-medical-kb/retrieve?api-version=2026-08-01-preview",
+    "mcpUrl": "https://umc-hackathon-devbox-fiq-search.search.windows.net/knowledgebases/umc-medical-kb/mcp?api-version=2026-08-01-preview",
+    "mcpTool": "knowledge_base_retrieve"
   },
   "foundry": {
     "account": "umc-hackathon-devbox-resource",
@@ -23,7 +25,8 @@
     "projectEndpoint": "https://umc-hackathon-devbox-resource.cognitiveservices.azure.com/api/projects/umc-hackathon-devbox",
     "embeddingDeployment": "text-embedding-3-large",
     "embeddingDimensions": 3072,
-    "chatDeployment": "gpt-5.4-nano"
+    "chatDeployment": "gpt-5.4-nano",
+    "kbConnection": "who-kb-mcp"
   },
   "storage": {
     "account": "umcdevstorage",

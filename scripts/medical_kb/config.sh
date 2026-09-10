@@ -31,6 +31,11 @@ export SEMANTIC_CONFIG="${SEMANTIC_CONFIG:-who-guidelines-semantic}"
 export KNOWLEDGE_SOURCE="${KNOWLEDGE_SOURCE:-who-guidelines-ks}"
 export KNOWLEDGE_BASE="${KNOWLEDGE_BASE:-umc-medical-kb}"
 
+# --- Foundry project connection that lets agents call the knowledge base over MCP ---
+export KB_CONNECTION_NAME="${KB_CONNECTION_NAME:-who-kb-mcp}"
+export PROJECT_RESOURCE_ID="/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RESOURCE_GROUP}/providers/Microsoft.CognitiveServices/accounts/${FOUNDRY_ACCOUNT}/projects/${FOUNDRY_PROJECT}"
+export PROJECT_ENDPOINT="${PROJECT_ENDPOINT:-${FOUNDRY_ENDPOINT}/api/projects/${FOUNDRY_PROJECT}}"
+
 # --- API version: only 2026-08-01-preview is accepted by this serverless service ---
 export SEARCH_API_VERSION="${SEARCH_API_VERSION:-2026-08-01-preview}"
 
