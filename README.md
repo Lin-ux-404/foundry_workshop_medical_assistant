@@ -17,33 +17,45 @@ including a **structured-output** example. Everything else in the brief is yours
   - Pydantic request/response and structured-output models (`schemas.py`),
   - config via environment variables (`config.py`).
 - `frontend/` Vite + React + TypeScript chat UI that calls `/api/chat`.
-- `labs/` a three-day Foundry notebook workshop, with four
+- `labs/` a three-day Foundry notebook workshop, with the four
   Day 1 notebooks implemented. The application is not a prerequisite.
 
 ## What you build
 
 Work through the notebooks in `labs/` to learn Foundry through small
-independent examples. Each one runs from a fresh kernel and depends on nothing
-before it.
+independent examples. Each one runs from a fresh kernel. Labs 3 and 4 share the
+same knowledge base, so run Lab 3 first if you want Lab 4's retrieval to make
+sense.
 
 | Notebook | You implement |
 | --- | --- |
 | `day_1/01_deploy_a_model.ipynb` | Deploy a model, complete a Responses call, move standing rules into `instructions` |
 | `day_1/02_prompt_agents.ipynb` | Write an agent role, save two versions, build the `agent_reference` |
-| `day_1/03_search_and_grounded_answers.ipynb` | Query AI Search, describe the index, write the grounding rule |
+| `day_1/03_knowledge_bases_and_foundry_iq.ipynb` | Query a Foundry IQ knowledge base and ground an agent in it over MCP |
 | `day_1/04_agent_framework_orchestration.ipynb` | Connect to a saved agent and order a sequential workflow |
-| `day_2/05_knowledge_bases_and_foundry_iq.ipynb` | Reach a Foundry IQ knowledge base over MCP |
 
-Labs 6 to 8 are empty placeholders. Guardrails, evaluation, fine-tuning and
-tool calling are covered elsewhere.
+Day 1 builds a grounded clinical assistant end to end: deploy a model, save it
+as an agent, ground it in real WHO guidelines, then coordinate two agents over
+that knowledge. Day 2 turns it into something you would run in production, and
+Day 3 is hands-on with the application.
 
-The notebooks do not require medical datasets, shared helper packages, or changes
-to the starter application. Application development remains a separate workstream.
+| Placeholder | Planned content |
+| --- | --- |
+| `day_2/05_guardrails.ipynb` | Guardrails |
+| `day_2/06_tools.ipynb` | Tools, including function tools and MCP servers beyond the knowledge base |
+| `day_2/07_evaluations_in_foundry.ipynb` | Evaluations in Foundry |
+| `day_3/README.md` | Application guide for `backend/` and `frontend/` |
+
+Labs 3 and 4 read from a knowledge base built from three published WHO clinical
+guidelines. `scripts/medical_kb/` provisions it and is safe to rerun; see
+[`scripts/medical_kb/README.md`](scripts/medical_kb/README.md). The notebooks need
+no shared helper packages and no changes to the starter application, which remains
+a separate workstream.
 
 ## Prerequisites
 
 - Python 3.11+ (the notebooks check this and stop on older kernels) and Node 18+
-- An Azure AI Foundry project with a deployed chat model (e.g. `gpt-4o-mini`)
+- An Azure AI Foundry project with a deployed chat model (the labs assume `gpt-5.6-luna`)
 - Azure CLI: run `az login` (the backend uses `DefaultAzureCredential`, no API keys)
 
 ## Run the backend
