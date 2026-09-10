@@ -1,0 +1,40 @@
+{
+  "$comment": "Non-secret endpoints and object names for the WHO medical knowledge base. Auth is Microsoft Entra (DefaultAzureCredential); no keys belong in this file.",
+  "subscriptionId": "df5e62d1-9c33-4157-8fae-26629b63a4a5",
+  "resourceGroup": "umc-dev",
+  "search": {
+    "service": "umc-hackathon-devbox-fiq-search",
+    "endpoint": "https://umc-hackathon-devbox-fiq-search.search.windows.net",
+    "apiVersion": "2026-08-01-preview",
+    "tokenScope": "https://search.azure.com/.default",
+    "index": "who-guidelines-index",
+    "semanticConfiguration": "who-guidelines-semantic",
+    "dataSource": "who-guidelines-datasource",
+    "skillset": "who-guidelines-skillset",
+    "indexer": "who-guidelines-indexer",
+    "knowledgeSource": "who-guidelines-ks",
+    "knowledgeBase": "umc-medical-kb",
+    "retrieveUrl": "https://umc-hackathon-devbox-fiq-search.search.windows.net/knowledgebases/umc-medical-kb/retrieve?api-version=2026-08-01-preview"
+  },
+  "foundry": {
+    "account": "umc-hackathon-devbox-resource",
+    "project": "umc-hackathon-devbox",
+    "endpoint": "https://umc-hackathon-devbox-resource.cognitiveservices.azure.com",
+    "projectEndpoint": "https://umc-hackathon-devbox-resource.cognitiveservices.azure.com/api/projects/umc-hackathon-devbox",
+    "embeddingDeployment": "text-embedding-3-large",
+    "embeddingDimensions": 3072,
+    "chatDeployment": "gpt-5.4-nano"
+  },
+  "storage": {
+    "account": "umcdevstorage",
+    "container": "who-guidelines",
+    "blobEndpoint": "https://umcdevstorage.blob.core.windows.net/"
+  },
+  "citationFields": {
+    "title": "document_title",
+    "url": "source_url",
+    "text": "chunk",
+    "id": "chunk_id",
+    "other": ["publisher", "publication_id", "topic", "metadata_storage_name"]
+  }
+}

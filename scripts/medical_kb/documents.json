@@ -1,0 +1,29 @@
+[
+  {
+    "file": "who-hearts-d-diabetes.pdf",
+    "document_title": "HEARTS D: Diagnosis and management of type 2 diabetes",
+    "publication_id": "WHO-UCN-NCD-20.1",
+    "publisher": "World Health Organization",
+    "topic": "type 2 diabetes",
+    "source_url": "https://www.who.int/publications/i/item/who-ucn-ncd-20.1",
+    "pdf_url": "https://iris.who.int/server/api/core/bitstreams/2a0b4f68-7155-4ad1-b543-945791e31830/content"
+  },
+  {
+    "file": "who-hypertension-pharmacological-treatment.pdf",
+    "document_title": "Guideline for the pharmacological treatment of hypertension in adults",
+    "publication_id": "9789240033986",
+    "publisher": "World Health Organization",
+    "topic": "hypertension",
+    "source_url": "https://www.who.int/publications/i/item/9789240033986",
+    "pdf_url": "https://iris.who.int/server/api/core/bitstreams/f062769d-f075-4a00-87af-0a2106e0bd04/content"
+  },
+  {
+    "file": "who-ipc-core-components.pdf",
+    "document_title": "Guidelines on core components of infection prevention and control programmes at the national and acute health care facility level",
+    "publication_id": "9789241549929",
+    "publisher": "World Health Organization",
+    "topic": "infection prevention and control",
+    "source_url": "https://www.who.int/publications/i/item/9789241549929",
+    "pdf_url": "https://iris.who.int/server/api/core/bitstreams/d811a2ad-3c7f-48a2-b88b-4935da71a87b/content"
+  }
+]

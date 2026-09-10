@@ -35,3 +35,6 @@ Thumbs.db
 
 # --- Notebooks ---
 .ipynb_checkpoints/
+
+# --- WHO guideline PDFs (fetched by scripts/medical_kb/01_download_docs.sh) ---
+labs/data/who_guidelines/*.pdf
