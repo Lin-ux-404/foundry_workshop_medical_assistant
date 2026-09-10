@@ -27,7 +27,7 @@ Requires `az`, `curl`, `jq`, `envsubst`, and a Python with `requests` +
 | `03_create_search_pipeline.sh` | Create-or-update of all six search objects. |
 | `04_verify.py` | Ingestion, chunk-content, and retrieval checks. Exits nonzero on failure. |
 | `05_connect_kb_to_foundry.sh` | Creates the `who-kb-mcp` project connection so agents can call the KB. |
-| `documents.json` | The document manifest: titles, WHO page URLs, PDF URLs, topics. |
+| `documents.json` | The document manifest: titles, WHO page URLs, PDF URLs, topics, licence and suggested citation. |
 | `kb_config.json` | Non-secret endpoints and names for the notebook to consume. |
 | `search_objects/*.json` | REST payload templates (`${VAR}` placeholders rendered by `envsubst`). |
 
@@ -93,3 +93,18 @@ account with its `text-embedding-3-large` and `gpt-5.6-luna` deployments.
 - **`retrievalReasoningEffort` must be `low` or `medium`.** `auto` is accepted by the
   direct `/retrieve` endpoint but rejected by agent retrieval with
   `InvalidAgentRetrievalRequest`.
+
+## Source licensing
+
+All three source documents are WHO publications released under
+**CC BY-NC-SA 3.0 IGO**. The licence requires attribution, restricts use to
+non-commercial purposes, and requires adaptations to carry a disclaimer.
+
+The licence travels with the content through the pipeline: `documents.json` holds
+the `license`, `license_url` and WHO suggested `citation` for each document; those
+are written to blob metadata on upload, projected into the index as retrievable
+fields, and exposed through the knowledge source's `sourceDataFields`, so a
+generated answer can carry the attribution its source requires.
+
+Full terms and the required adaptation disclaimer are in
+[`labs/data/who_guidelines/NOTICE.md`](../../labs/data/who_guidelines/NOTICE.md).

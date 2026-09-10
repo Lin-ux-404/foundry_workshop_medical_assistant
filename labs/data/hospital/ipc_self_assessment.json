@@ -15,6 +15,16 @@
     "workload_staffing_bed_occupancy": "Appropriate workload, staffing levels and bed occupancy",
     "built_environment_wash": "Built environment, materials and equipment, including WASH services"
   },
+  "derived_from": {
+    "$comment": "Only the eight component NAMES are derived from the WHO source below. The ward names and every score in this file are invented and are not WHO content.",
+    "title": "Guidelines on core components of infection prevention and control programmes at the national and acute health care facility level",
+    "publisher": "World Health Organization",
+    "source_url": "https://www.who.int/publications/i/item/9789241549929",
+    "license": "CC BY-NC-SA 3.0 IGO",
+    "license_url": "https://creativecommons.org/licenses/by-nc-sa/3.0/igo/",
+    "citation": "Guidelines on core components of infection prevention and control programmes at the national and acute health care facility level. Geneva: World Health Organization; 2016. Licence: CC BY-NC-SA 3.0 IGO.",
+    "disclaimer": "This is an adaptation of an original work by the World Health Organization (WHO). Views and opinions expressed in the adaptation are the sole responsibility of the author or authors of the adaptation and are not endorsed by WHO."
+  },
   "wards": [
     {
       "ward": "4B",

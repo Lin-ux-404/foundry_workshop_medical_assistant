@@ -30,6 +30,9 @@ jq -c '.[]' "$manifest" | while read -r doc; do
       publisher="$(jq -r '.publisher' <<<"$doc")" \
       publication_id="$(jq -r '.publication_id' <<<"$doc")" \
       topic="$(jq -r '.topic' <<<"$doc")" \
+      license="$(jq -r '.license' <<<"$doc")" \
+      license_url="$(jq -r '.license_url' <<<"$doc")" \
+      citation="$(jq -r '.citation' <<<"$doc")" \
     --no-progress --only-show-errors -o none
   echo "  ok    $file"
 done

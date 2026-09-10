@@ -38,6 +38,14 @@
     "url": "source_url",
     "text": "chunk",
     "id": "chunk_id",
-    "other": ["publisher", "publication_id", "topic", "metadata_storage_name"]
+    "other": [
+      "publisher",
+      "publication_id",
+      "topic",
+      "license_url",
+      "metadata_storage_name"
+    ],
+    "license": "license",
+    "citation": "citation"
   }
 }

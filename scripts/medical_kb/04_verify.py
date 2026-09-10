@@ -90,7 +90,7 @@ def check_chunks() -> None:
             "filter": f"metadata_storage_name eq '{name}'",
             "count": True,
             "top": 3,
-            "select": "chunk_id,chunk,document_title,source_url,publisher,publication_id,topic",
+            "select": "chunk_id,chunk,document_title,source_url,publisher,publication_id,topic,license,license_url,citation",
         })
         r.raise_for_status()
         data = r.json()
@@ -106,6 +106,7 @@ def check_chunks() -> None:
         print(f"      title      : {top.get('document_title')}")
         print(f"      source_url : {top.get('source_url')}")
         print(f"      topic      : {top.get('topic')} | id: {top.get('publication_id')}")
+        print(f"      license    : {top.get('license')}")
         print(f"      text       : {(top.get('chunk') or '')[:120].strip()!r}")
         if empty:
             fail(f"{name}: {len(empty)} sampled chunks have empty text")
@@ -113,6 +114,10 @@ def check_chunks() -> None:
             fail(f"{name}: source_url mismatch ({top.get('source_url')})")
         if top.get("document_title") != doc["document_title"]:
             fail(f"{name}: document_title mismatch")
+        if top.get("license") != doc["license"]:
+            fail(f"{name}: license mismatch ({top.get('license')})")
+        if not (top.get("citation") or "").strip():
+            fail(f"{name}: citation is empty, attribution would be lost")
 
 
 def check_retrieval() -> None:

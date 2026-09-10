@@ -18,6 +18,8 @@
       { "name": "publisher" },
       { "name": "publication_id" },
       { "name": "topic" },
+      { "name": "license" },
+      { "name": "citation" },
       { "name": "metadata_storage_name" }
     ]
   }
