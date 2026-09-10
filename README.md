@@ -17,8 +17,8 @@ including a **structured-output** example. Everything else in the brief is yours
   - Pydantic request/response and structured-output models (`schemas.py`),
   - config via environment variables (`config.py`).
 - `frontend/` Vite + React + TypeScript chat UI that calls `/api/chat`.
-- `labs/` a three-day Foundry notebook workshop, with the four
-  Day 1 notebooks implemented. The application is not a prerequisite.
+- `labs/` a three-day Foundry notebook workshop, with the four Day 1 notebooks
+  and the Day 2 tools lab implemented. The application is not a prerequisite.
 
 ## What you build
 
@@ -33,6 +33,7 @@ sense.
 | `day_1/02_prompt_agents.ipynb` | Write an agent role, save two versions, build the `agent_reference` |
 | `day_1/03_knowledge_bases_and_foundry_iq.ipynb` | Query a Foundry IQ knowledge base and ground an agent in it over MCP |
 | `day_1/04_agent_framework_orchestration.ipynb` | Connect to a saved agent and order a sequential workflow |
+| `day_2/06_tools.ipynb` | Declare a function tool, complete the tool-call round trip, gate an action behind approval |
 
 Day 1 builds a grounded clinical assistant end to end: deploy a model, save it
 as an agent, ground it in real WHO guidelines, then coordinate two agents over
@@ -42,12 +43,12 @@ Day 3 is hands-on with the application.
 | Placeholder | Planned content |
 | --- | --- |
 | `day_2/05_guardrails.ipynb` | Guardrails |
-| `day_2/06_tools.ipynb` | Tools, including function tools and MCP servers beyond the knowledge base |
 | `day_2/07_evaluations_in_foundry.ipynb` | Evaluations in Foundry |
 | `day_3/README.md` | Application guide for `backend/` and `frontend/` |
 
-Labs 3 and 4 read from a knowledge base built from three published WHO clinical
-guidelines. `scripts/medical_kb/` provisions it and is safe to rerun; see
+Labs 3, 4 and 6 read from a knowledge base built from three published WHO clinical
+guidelines. Lab 6 also reads `labs/data/hospital/ipc_self_assessment.json`, which is
+fictional data for a made-up hospital. `scripts/medical_kb/` provisions it and is safe to rerun; see
 [`scripts/medical_kb/README.md`](scripts/medical_kb/README.md). The notebooks need
 no shared helper packages and no changes to the starter application, which remains
 a separate workstream.

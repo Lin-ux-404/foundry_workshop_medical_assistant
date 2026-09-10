@@ -1,0 +1,71 @@
+{
+  "$comment": "FICTIONAL workshop data. Invented wards and invented scores for a made-up hospital, used to demonstrate an agent calling into a local system of record. Nothing here describes a real facility, and nothing here is clinical guidance. The eight components are the real core components named in the WHO IPC guideline; the scores against them are not.",
+  "scale": {
+    "range": "0-5",
+    "meaning": "Internal self-assessment maturity score. 0 = not in place, 5 = fully implemented and audited.",
+    "source": "Internal quality team, not a WHO instrument."
+  },
+  "components": {
+    "ipc_programme": "IPC programme with a dedicated, trained team",
+    "ipc_guidelines": "Evidence-based IPC guidelines adapted to the facility",
+    "education_and_training": "IPC education and training for health workers",
+    "hai_surveillance": "Health care-associated infection surveillance",
+    "multimodal_strategies": "Multimodal strategies for implementing IPC activities",
+    "monitoring_audit_feedback": "Monitoring and auditing of IPC practices with feedback",
+    "workload_staffing_bed_occupancy": "Appropriate workload, staffing levels and bed occupancy",
+    "built_environment_wash": "Built environment, materials and equipment, including WASH services"
+  },
+  "wards": [
+    {
+      "ward": "4B",
+      "name": "General Medicine",
+      "beds": 32,
+      "last_assessed": "2026-06-14",
+      "scores": {
+        "ipc_programme": 4,
+        "ipc_guidelines": 4,
+        "education_and_training": 3,
+        "hai_surveillance": 4,
+        "multimodal_strategies": 3,
+        "monitoring_audit_feedback": 2,
+        "workload_staffing_bed_occupancy": 1,
+        "built_environment_wash": 4
+      },
+      "notes": "Bed occupancy has exceeded 100% on 41 days this year. Audit programme paused since March."
+    },
+    {
+      "ward": "2A",
+      "name": "Surgical",
+      "beds": 24,
+      "last_assessed": "2026-07-02",
+      "scores": {
+        "ipc_programme": 5,
+        "ipc_guidelines": 4,
+        "education_and_training": 4,
+        "hai_surveillance": 5,
+        "multimodal_strategies": 4,
+        "monitoring_audit_feedback": 4,
+        "workload_staffing_bed_occupancy": 3,
+        "built_environment_wash": 5
+      },
+      "notes": "Strongest performer. Runs a monthly audit-and-feedback cycle."
+    },
+    {
+      "ward": "ICU",
+      "name": "Intensive Care",
+      "beds": 12,
+      "last_assessed": "2026-05-28",
+      "scores": {
+        "ipc_programme": 4,
+        "ipc_guidelines": 5,
+        "education_and_training": 2,
+        "hai_surveillance": 5,
+        "multimodal_strategies": 3,
+        "monitoring_audit_feedback": 3,
+        "workload_staffing_bed_occupancy": 2,
+        "built_environment_wash": 3
+      },
+      "notes": "High agency-staff turnover; induction training backlog of 19 staff."
+    }
+  ]
+}
