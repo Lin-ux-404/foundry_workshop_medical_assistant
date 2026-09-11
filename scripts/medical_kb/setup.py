@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
-"""End-to-end, rerunnable setup for the WHO medical knowledge base in umc-dev.
+"""End-to-end, rerunnable setup for the WHO medical knowledge base.
 
     az login
-    python scripts/medical_kb/setup.py
-    python scripts/medical_kb/setup.py --reset-indexer   # force a full re-ingest
+    python scripts/medical_kb/setup.py --resource-group my-rg
+    python scripts/medical_kb/setup.py --resource-group my-rg --reset-indexer
 
-Every step is idempotent. Nothing outside the umc-dev resource group is touched,
-and no secrets are read, written, or printed - all auth is Microsoft Entra.
+Every step is idempotent, and all auth is Microsoft Entra - no secrets are
+read, written, or printed.
 """
 
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -19,19 +20,26 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 
 
-def run(script: str, extra_args: list[str] | None = None) -> None:
-    subprocess.run(
-        [sys.executable, str(HERE / script), *(extra_args or [])],
-        check=True,
-    )
+def run(script: str, *extra_args: str) -> None:
+    subprocess.run([sys.executable, str(HERE / script), *extra_args], check=True)
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument(
+        "--resource-group",
+        default=os.environ.get("RESOURCE_GROUP", "umc-dev"),
+        help="Resource group to deploy into (default: %(default)s).",
+    )
     parser.add_argument(
         "--reset-indexer", action="store_true", help="Force a full re-ingest of all documents."
     )
     args = parser.parse_args()
+
+    # Every step reads its config from common.py, which reads this env var -
+    # setting it once here means none of the numbered scripts need to know
+    # about --resource-group.
+    os.environ["RESOURCE_GROUP"] = args.resource_group
 
     print("\n=== 0/5 role assignments")
     run("00_assign_roles.py")
@@ -43,7 +51,7 @@ def main() -> None:
     run("02_upload_blobs.py")
 
     print("\n=== 3/5 create search pipeline + run ingestion")
-    run("03_create_search_pipeline.py", ["--reset"] if args.reset_indexer else None)
+    run("03_create_search_pipeline.py", *(["--reset"] if args.reset_indexer else []))
 
     print("\n=== 4/5 connect the knowledge base to Foundry")
     run("05_connect_kb_to_foundry.py")
