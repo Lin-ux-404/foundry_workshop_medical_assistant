@@ -21,6 +21,12 @@ from azure.core.exceptions import HttpResponseError
 
 from common import Settings, documents_manifest, kb_retrieval_client, load_settings, search_client, search_indexer_client
 
+# Windows consoles often default to a legacy codepage (e.g. cp1252) that can't
+# encode characters PDFs and model answers commonly contain (>=, en dashes,
+# etc). Force UTF-8 output so a print statement never crashes the report.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 QUESTIONS = {
     "who-hearts-d-diabetes.pdf": "What HbA1c and fasting plasma glucose thresholds does WHO use to diagnose type 2 diabetes, and which medicine is first-line treatment?",
     "who-hypertension-pharmacological-treatment.pdf": "At what blood pressure level does WHO recommend starting pharmacological treatment for hypertension in adults, and which drug classes are recommended as first-line?",
@@ -56,11 +62,11 @@ def check_indexer(settings: Settings, documents: list[dict]) -> None:
         fail("indexer has never run")
         return
     print(
-        f"  status={last.status} processed={last.item_count} "
+        f"  status={last.status.value} processed={last.item_count} "
         f"failed={last.failed_item_count} warnings={len(last.warnings or [])}"
     )
     if last.status != "success":
-        fail(f"indexer status is {last.status}")
+        fail(f"indexer status is {last.status.value}")
     if last.failed_item_count:
         fail(f"{last.failed_item_count} items failed")
     if last.item_count < len(documents):

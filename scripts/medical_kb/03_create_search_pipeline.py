@@ -80,7 +80,7 @@ def run_and_wait(settings: Settings, reset: bool) -> None:
         return
 
     print(
-        f"  status={final.status} processed={final.item_count} "
+        f"  status={final.status.value} processed={final.item_count} "
         f"failed={final.failed_item_count} warnings={len(final.warnings or [])}"
     )
 
