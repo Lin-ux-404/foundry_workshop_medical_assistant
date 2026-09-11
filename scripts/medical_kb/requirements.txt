@@ -1,0 +1,19 @@
+# Python SDK dependencies for the WHO medical knowledge base pipeline scripts.
+#
+# Auth is Microsoft Entra only (DefaultAzureCredential); run `az login` first
+# so the Azure CLI credential fallback has a session to use. No keys or
+# connection strings are read, stored, or printed anywhere in this pipeline.
+
+azure-identity
+
+# Preview release: knowledge bases / knowledge sources (Foundry IQ) and the
+# 2026-08-01-preview API version are not in a stable azure-search-documents
+# release yet.
+azure-search-documents>=12.1.0b2
+
+azure-storage-blob
+azure-mgmt-authorization
+azure-mgmt-resource
+azure-mgmt-search
+
+requests
