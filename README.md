@@ -12,12 +12,14 @@ an agent on **Microsoft Foundry** via the **Microsoft Agent Framework**.
 ```
 app/
   backend/           FastAPI app (main.py, config.py, clients/, agents/, routers/, schemas.py)
+                     Runs the agent(s) on Microsoft Foundry and exposes /api/chat, /api/triage, /api/health.
   frontend/          Vite + React + TypeScript chat UI (src/)
+                     Calls the backend's /api/chat endpoint.
 labs/
-  day_1/ day_2/ day_3/   Foundry notebooks (see below)
-  data/                  Datasets used by the labs (WHO guidelines, hospital IPC data)
+  day_1/ day_2/ day_3/   Foundry notebooks, one per topic (see below).
+  data/                  Datasets used by the labs (WHO guidelines, hospital IPC data).
 scripts/
-  medical_kb/        Provisions the labs' knowledge base
+  medical_kb/        Provisions the Azure AI Search knowledge base the labs query.
 ```
 
 ## Labs
@@ -26,16 +28,16 @@ Work through the notebooks in `labs/` to learn Foundry through independent
 examples. Each runs from a fresh kernel. Labs 3 and 4 share a knowledge base,
 so run Lab 3 before Lab 4.
 
-| Notebook | Status | Topic |
-| --- | --- | --- |
-| `day_1/01_deploy_a_model.ipynb` | Implemented | Deploy a model, call the Responses API |
-| `day_1/02_prompt_agents.ipynb` | Implemented | Save an agent, version its instructions |
-| `day_1/03_knowledge_bases_and_foundry_iq.ipynb` | Implemented | Ground an agent in a Foundry IQ knowledge base |
-| `day_1/04_agent_framework_orchestration.ipynb` | Implemented | Orchestrate a sequential multi-agent workflow |
-| `day_2/05_guardrails.ipynb` | Placeholder | Guardrails |
-| `day_2/06_tools.ipynb` | Implemented | Function tools, tool-call round trip, approvals |
-| `day_2/07_evaluations_in_foundry.ipynb` | Placeholder | Evaluations in Foundry |
-| `day_3/README.md` | Placeholder | Application guide for `app/backend/` and `app/frontend/` |
+| Notebook | Topic |
+| --- | --- |
+| `day_1/01_deploy_a_model.ipynb` | Deploy a model, call the Responses API |
+| `day_1/02_prompt_agents.ipynb` | Save an agent, version its instructions |
+| `day_1/03_knowledge_bases_and_foundry_iq.ipynb` | Ground an agent in a Foundry IQ knowledge base |
+| `day_1/04_agent_framework_orchestration.ipynb` | Orchestrate a sequential multi-agent workflow |
+| `day_2/05_guardrails.ipynb` | Guardrails |
+| `day_2/06_tools.ipynb` | Function tools, tool-call round trip, approvals |
+| `day_2/07_evaluations_in_foundry.ipynb` | Evaluations in Foundry |
+| `day_3/README.md` | Application guide for `app/backend/` and `app/frontend/` |
 
 Labs 3, 4 and 6 read from a knowledge base built from three published WHO
 clinical guidelines; Lab 6 also reads synthetic hospital data from
