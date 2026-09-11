@@ -15,23 +15,11 @@ read or printed. Run `az login` first.
 
 from __future__ import annotations
 
-import json
-import os
 import sys
-from pathlib import Path
 
-import requests
-from azure.identity import DefaultAzureCredential
+from azure.core.exceptions import HttpResponseError
 
-HERE = Path(__file__).resolve().parent
-
-SEARCH_SERVICE = os.getenv("SEARCH_SERVICE", "umc-hackathon-devbox-fiq-search")
-ENDPOINT = os.getenv("SEARCH_ENDPOINT", f"https://{SEARCH_SERVICE}.search.windows.net")
-API_VERSION = os.getenv("SEARCH_API_VERSION", "2026-08-01-preview")
-INDEX = os.getenv("SEARCH_INDEX", "who-guidelines-index")
-INDEXER = os.getenv("INDEXER", "who-guidelines-indexer")
-KNOWLEDGE_BASE = os.getenv("KNOWLEDGE_BASE", "umc-medical-kb")
-KNOWLEDGE_SOURCE = os.getenv("KNOWLEDGE_SOURCE", "who-guidelines-ks")
+from common import Settings, documents_manifest, kb_retrieval_client, load_settings, search_client, search_indexer_client
 
 QUESTIONS = {
     "who-hearts-d-diabetes.pdf": "What HbA1c and fasting plasma glucose thresholds does WHO use to diagnose type 2 diabetes, and which medicine is first-line treatment?",
@@ -39,22 +27,20 @@ QUESTIONS = {
     "who-ipc-core-components.pdf": "What are the core components of infection prevention and control programmes that WHO recommends at the acute health care facility level?",
 }
 
-_credential = DefaultAzureCredential()
+CHUNK_SELECT_FIELDS = [
+    "chunk_id",
+    "chunk",
+    "document_title",
+    "source_url",
+    "publisher",
+    "publication_id",
+    "topic",
+    "license",
+    "license_url",
+    "citation",
+]
 
-
-def token() -> str:
-    return _credential.get_token("https://search.azure.com/.default").token
-
-
-def call(method: str, path: str, body: dict | None = None) -> requests.Response:
-    return requests.request(
-        method,
-        f"{ENDPOINT}{path}",
-        params={"api-version": API_VERSION},
-        headers={"Authorization": f"Bearer {token()}", "Content-Type": "application/json"},
-        json=body,
-        timeout=180,
-    )
+failures: list[str] = []
 
 
 def fail(msg: str) -> None:
@@ -62,45 +48,45 @@ def fail(msg: str) -> None:
     failures.append(msg)
 
 
-failures: list[str] = []
-documents = json.loads((HERE / "documents.json").read_text())
-
-
-def check_indexer() -> None:
+def check_indexer(settings: Settings, documents: list[dict]) -> None:
     print("\n[1] indexer run")
-    r = call("GET", f"/indexers/{INDEXER}/status")
-    r.raise_for_status()
-    last = r.json()["lastResult"]
-    print(f"  status={last['status']} processed={last['itemsProcessed']} "
-          f"failed={last['itemsFailed']} warnings={len(last.get('warnings') or [])}")
-    if last["status"] != "success":
-        fail(f"indexer status is {last['status']}")
-    if last["itemsFailed"]:
-        fail(f"{last['itemsFailed']} items failed")
-    if last["itemsProcessed"] < len(documents):
-        fail(f"expected {len(documents)} documents, processed {last['itemsProcessed']}")
+    status = search_indexer_client(settings).get_indexer_status(settings.indexer)
+    last = status.last_result
+    if last is None:
+        fail("indexer has never run")
+        return
+    print(
+        f"  status={last.status} processed={last.item_count} "
+        f"failed={last.failed_item_count} warnings={len(last.warnings or [])}"
+    )
+    if last.status != "success":
+        fail(f"indexer status is {last.status}")
+    if last.failed_item_count:
+        fail(f"{last.failed_item_count} items failed")
+    if last.item_count < len(documents):
+        fail(f"expected {len(documents)} documents, processed {last.item_count}")
 
 
-def check_chunks() -> None:
+def check_chunks(settings: Settings, documents: list[dict]) -> None:
     print("\n[2] indexed chunks per document")
+    client = search_client(settings)
     for doc in documents:
         name = doc["file"]
-        r = call("POST", f"/indexes/{INDEX}/docs/search", {
-            "search": "*",
-            "filter": f"metadata_storage_name eq '{name}'",
-            "count": True,
-            "top": 3,
-            "select": "chunk_id,chunk,document_title,source_url,publisher,publication_id,topic,license,license_url,citation",
-        })
-        r.raise_for_status()
-        data = r.json()
-        total = data["@odata.count"]
-        rows = data["value"]
-        if total == 0:
+        results = client.search(
+            search_text="*",
+            filter=f"metadata_storage_name eq '{name}'",
+            include_total_count=True,
+            top=3,
+            select=CHUNK_SELECT_FIELDS,
+        )
+        rows = list(results)
+        total = results.get_count()
+        if not total:
             fail(f"{name}: no chunks indexed")
             continue
-        empty = [x for x in rows if not (x.get("chunk") or "").strip()]
-        lengths = [len(x.get("chunk") or "") for x in rows]
+
+        empty = [row for row in rows if not (row.get("chunk") or "").strip()]
+        lengths = [len(row.get("chunk") or "") for row in rows]
         top = rows[0]
         print(f"  {name}: {total} chunks, sample lengths {lengths}")
         print(f"      title      : {top.get('document_title')}")
@@ -108,6 +94,7 @@ def check_chunks() -> None:
         print(f"      topic      : {top.get('topic')} | id: {top.get('publication_id')}")
         print(f"      license    : {top.get('license')}")
         print(f"      text       : {(top.get('chunk') or '')[:120].strip()!r}")
+
         if empty:
             fail(f"{name}: {len(empty)} sampled chunks have empty text")
         if top.get("source_url") != doc["source_url"]:
@@ -120,37 +107,44 @@ def check_chunks() -> None:
             fail(f"{name}: citation is empty, attribution would be lost")
 
 
-def check_retrieval() -> None:
+def check_retrieval(settings: Settings, documents: list[dict]) -> None:
     print("\n[3] knowledge base retrieval")
+    client = kb_retrieval_client(settings)
     for doc in documents:
         question = QUESTIONS[doc["file"]]
         print(f"\n  Q ({doc['topic']}): {question}")
-        r = call("POST", f"/knowledgebases/{KNOWLEDGE_BASE}/retrieve", {
+
+        request = {
             "messages": [{"role": "user", "content": [{"type": "text", "text": question}]}],
             "includeActivity": True,
             "outputMode": "answerSynthesis",
             "maxOutputDocuments": 20,
             "maxRuntimeInSeconds": 120,
-            "knowledgeSourceParams": [{
-                "kind": "searchIndex",
-                "knowledgeSourceName": KNOWLEDGE_SOURCE,
-                "includeReferences": True,
-                "includeReferenceSourceData": True,
-            }],
-        })
-        if r.status_code not in (200, 206):
-            fail(f"{doc['file']}: retrieve returned HTTP {r.status_code}: {r.text[:400]}")
+            "knowledgeSourceParams": [
+                {
+                    "kind": "searchIndex",
+                    "knowledgeSourceName": settings.knowledge_source,
+                    "includeReferences": True,
+                    "includeReferenceSourceData": True,
+                }
+            ],
+        }
+        try:
+            result = client.retrieve(request)
+        except HttpResponseError as exc:
+            fail(f"{doc['file']}: retrieve failed: {exc.message}")
             continue
-        payload = r.json()
+
         answer = "".join(
-            part.get("text", "")
-            for msg in payload.get("response") or []
-            for part in msg.get("content") or []
+            (getattr(part, "text", None) or "")
+            for message in (result.response or [])
+            for part in (message.content or [])
         )
-        refs = payload.get("references") or []
+        refs = result.references or []
         words = len(answer.split())
         print(f"  A ({words} words): {answer.strip()}")
         print(f"  references: {len(refs)}")
+
         if words > 160:
             fail(f"{doc['file']}: answer is {words} words, expected a concise answer")
         if not answer.strip():
@@ -161,12 +155,12 @@ def check_retrieval() -> None:
 
         cited: dict[str, tuple[str, int]] = {}
         for ref in refs:
-            sd = ref.get("sourceData") or {}
-            title = sd.get("document_title")
+            source_data = ref.source_data or {}
+            title = source_data.get("document_title")
             if not title:
                 continue
-            url, count = cited.get(title, (sd.get("source_url") or "", 0))
-            cited[title] = (url or (sd.get("source_url") or ""), count + 1)
+            url, count = cited.get(title, (source_data.get("source_url") or "", 0))
+            cited[title] = (url or (source_data.get("source_url") or ""), count + 1)
         for title, (url, count) in sorted(cited.items(), key=lambda kv: -kv[1][1]):
             print(f"      - {title}  ({count} refs)")
             print(f"        {url}")
@@ -179,14 +173,22 @@ def check_retrieval() -> None:
             fail(f"{doc['file']}: expected document not among cited titles {sorted(titles)}")
 
 
-check_indexer()
-check_chunks()
-check_retrieval()
+def main() -> None:
+    settings = load_settings()
+    documents = documents_manifest()
 
-print("\n" + "=" * 70)
-if failures:
-    print(f"FAILED ({len(failures)}):")
-    for f in failures:
-        print(f"  - {f}")
-    sys.exit(1)
-print("All checks passed.")
+    check_indexer(settings, documents)
+    check_chunks(settings, documents)
+    check_retrieval(settings, documents)
+
+    print("\n" + "=" * 70)
+    if failures:
+        print(f"FAILED ({len(failures)}):")
+        for msg in failures:
+            print(f"  - {msg}")
+        sys.exit(1)
+    print("All checks passed.")
+
+
+if __name__ == "__main__":
+    main()
