@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Idempotently assign the RBAC roles the pipeline needs, scoped to umc-dev only.
+"""Idempotently assign the RBAC roles the pipeline needs.
 
     python scripts/medical_kb/00_assign_roles.py
 
@@ -53,9 +53,9 @@ def assign(
     auth_client: AuthorizationManagementClient,
     subscription_id: str,
     principal_id: str,
+    principal_type: str,
     role: str,
     scope: str,
-    principal_type: str,
     label: str,
 ) -> None:
     role_definition_id = (
@@ -88,56 +88,38 @@ def main() -> None:
     credential = get_credential()
 
     search_mgmt = SearchManagementClient(credential, settings.subscription_id)
-    search_service = search_mgmt.services.get(settings.resource_group, settings.search_service)
-    search_mi = search_service.identity.principal_id
+    search_mi = search_mgmt.services.get(
+        settings.resource_group, settings.search_service
+    ).identity.principal_id
 
     resource_mgmt = ResourceManagementClient(credential, settings.subscription_id)
-    project = resource_mgmt.resources.get_by_id(
+    project_mi = resource_mgmt.resources.get_by_id(
         settings.project_resource_id, api_version=PROJECT_API_VERSION
-    )
-    project_mi = project.identity.principal_id
+    ).identity.principal_id
 
     me = signed_in_user_id()
-
-    auth_client = AuthorizationManagementClient(credential, settings.subscription_id)
 
     storage_scope = settings.storage_resource_id
     foundry_scope = settings.foundry_account_resource_id
     search_scope = settings.search_service_resource_id
 
-    # Search service managed identity -> read blobs, call the embedding/chat deployments.
-    assign(
-        auth_client, settings.subscription_id, search_mi, "Storage Blob Data Reader",
-        storage_scope, "ServicePrincipal", "search MI -> Storage Blob Data Reader",
-    )
-    assign(
-        auth_client, settings.subscription_id, search_mi, "Cognitive Services User",
-        foundry_scope, "ServicePrincipal", "search MI -> Cognitive Services User",
-    )
+    # (principal, principal type, role, scope, log label)
+    assignments = [
+        # Search service managed identity -> read blobs, call the embedding/chat deployments.
+        (search_mi, "ServicePrincipal", "Storage Blob Data Reader", storage_scope, "search MI -> Storage Blob Data Reader"),
+        (search_mi, "ServicePrincipal", "Cognitive Services User", foundry_scope, "search MI -> Cognitive Services User"),
+        # Foundry project managed identity -> call the knowledge base's /retrieve over MCP.
+        (project_mi, "ServicePrincipal", "Search Index Data Reader", search_scope, "project MI -> Search Index Data Reader"),
+        # Operator -> manage search objects, upload blobs, and call /retrieve.
+        (me, "User", "Search Service Contributor", search_scope, "me -> Search Service Contributor"),
+        (me, "User", "Search Index Data Contributor", search_scope, "me -> Search Index Data Contributor"),
+        (me, "User", "Search Index Data Reader", search_scope, "me -> Search Index Data Reader"),
+        (me, "User", "Storage Blob Data Contributor", storage_scope, "me -> Storage Blob Data Contributor"),
+    ]
 
-    # Foundry project managed identity -> call the knowledge base's /retrieve over MCP.
-    assign(
-        auth_client, settings.subscription_id, project_mi, "Search Index Data Reader",
-        search_scope, "ServicePrincipal", "project MI -> Search Index Data Reader",
-    )
-
-    # Operator -> manage search objects, upload blobs, and call /retrieve.
-    assign(
-        auth_client, settings.subscription_id, me, "Search Service Contributor",
-        search_scope, "User", "me -> Search Service Contributor",
-    )
-    assign(
-        auth_client, settings.subscription_id, me, "Search Index Data Contributor",
-        search_scope, "User", "me -> Search Index Data Contributor",
-    )
-    assign(
-        auth_client, settings.subscription_id, me, "Search Index Data Reader",
-        search_scope, "User", "me -> Search Index Data Reader",
-    )
-    assign(
-        auth_client, settings.subscription_id, me, "Storage Blob Data Contributor",
-        storage_scope, "User", "me -> Storage Blob Data Contributor",
-    )
+    auth_client = AuthorizationManagementClient(credential, settings.subscription_id)
+    for principal_id, principal_type, role, scope, label in assignments:
+        assign(auth_client, settings.subscription_id, principal_id, principal_type, role, scope, label)
 
 
 if __name__ == "__main__":
