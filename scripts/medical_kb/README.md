@@ -9,27 +9,43 @@ read, or printed — the search service has `disableLocalAuth: true`.
 
 ## Run it
 
-```bash
+```powershell
 az login
-./scripts/medical_kb/setup.sh          # idempotent, safe to rerun
-RESET_INDEXER=1 ./scripts/medical_kb/setup.sh   # force a full re-ingest
+$env:SUBSCRIPTION_ID = "<your-subscription-id>"
+pip install -r scripts/medical_kb/requirements.txt
+
+python scripts/medical_kb/setup.py                  # idempotent, safe to rerun
+python scripts/medical_kb/setup.py --reset-indexer  # force a full re-ingest
 ```
 
-Requires `az`, `curl`, `jq`, `envsubst`, and a Python with `requests` +
-`azure-identity` (the repo `.venv` has them).
+```bash
+az login
+export SUBSCRIPTION_ID=<your-subscription-id>
+pip install -r scripts/medical_kb/requirements.txt
+
+python scripts/medical_kb/setup.py
+python scripts/medical_kb/setup.py --reset-indexer
+```
+
+Requires only Python 3.11+ and the packages in `requirements.txt` — the whole
+pipeline is Python calling official Azure SDKs (`azure-search-documents`,
+`azure-storage-blob`, `azure-mgmt-*`), no `az`, `curl`, `jq`, or `envsubst`.
+`SUBSCRIPTION_ID` has no default and must be set; every other value falls back
+to the umc-dev workshop defaults in `common.py` and can be overridden the same way.
 
 | Script | Purpose |
 | --- | --- |
-| `config.sh` | Names, endpoints, and REST helpers. Every value is overridable by env var. |
-| `00_assign_roles.sh` | Idempotent RBAC for the search managed identity and your user. |
-| `01_download_docs.sh` | Downloads the three WHO PDFs into `labs/data/who_guidelines/`. |
-| `02_upload_blobs.sh` | Creates the container and uploads with citation metadata (`--auth-mode login`). |
-| `03_create_search_pipeline.sh` | Create-or-update of all six search objects. |
-| `04_verify.py` | Ingestion, chunk-content, and retrieval checks. Exits nonzero on failure. |
-| `05_connect_kb_to_foundry.sh` | Creates the `who-kb-mcp` project connection so agents can call the KB. |
+| `common.py` | Shared config (env vars, no hardcoded subscription default), credential/client factories, and the `${VAR}` template renderer used in place of `envsubst`. |
+| `00_assign_roles.py` | Idempotent RBAC for the search managed identity, the Foundry project managed identity, and your user, via `azure-mgmt-authorization`/`azure-mgmt-resource`/`azure-mgmt-search`. |
+| `01_download_docs.py` | Downloads the three WHO PDFs into `labs/data/who_guidelines/`. |
+| `02_upload_blobs.py` | Creates the container and uploads with citation metadata via `azure-storage-blob`. |
+| `03_create_search_pipeline.py` | Create-or-update of all six search objects via `azure-search-documents`, then triggers and polls the indexer run (`--skip-run`, `--reset`). |
+| `04_verify.py` | Ingestion, chunk-content, and retrieval checks via the SDK clients. Exits nonzero on failure. |
+| `05_connect_kb_to_foundry.py` | Creates the `who-kb-mcp` project connection so agents can call the KB, via the generic ARM resource client. |
+| `setup.py` | Orchestrates 00-05 in order (`--reset-indexer` to force a full re-ingest). |
 | `documents.json` | The document manifest: titles, WHO page URLs, PDF URLs, topics, licence and suggested citation. |
 | `kb_config.json` | Non-secret endpoints and names for the notebook to consume. |
-| `search_objects/*.json` | REST payload templates (`${VAR}` placeholders rendered by `envsubst`). |
+| `search_objects/*.json` | Search-object payload templates (`${VAR}` placeholders rendered by `common.render_template`). |
 
 ## What gets created
 
@@ -71,7 +87,7 @@ account with its `text-embedding-3-large` and `gpt-5.6-luna` deployments.
   meta-commentary, and forbids bullets that restate the lead sentence; answers now
   land around 35-135 words. `04_verify.py` fails if an answer exceeds 160 words, so
   this does not silently regress. Tune the cap in
-  `search_objects/knowledge_base.json` and rerun `03_create_search_pipeline.sh` -
+  `search_objects/knowledge_base.json` and rerun `03_create_search_pipeline.py` -
   no re-ingestion is needed.
 
 ## Citations
@@ -80,7 +96,7 @@ account with its `text-embedding-3-large` and `gpt-5.6-luna` deployments.
 `publisher`, `publication_id`, `topic`, `metadata_storage_name`, `chunk`, and
 `chunk_id`. Answers cite chunks inline as `[ref_id:N]`, indexing into `references[]`.
 - **Connecting the KB to an agent.** An agent reaches the knowledge base over MCP, not
-  over the `/retrieve` REST endpoint. `05_connect_kb_to_foundry.sh` creates a
+  over the `/retrieve` REST endpoint. `05_connect_kb_to_foundry.py` creates a
   `RemoteTool` project connection targeting
   `{search}/knowledgebases/{kb}/mcp?api-version=2026-08-01-preview` with
   `authType: ProjectManagedIdentity` and `audience: https://search.azure.com/`.
@@ -89,7 +105,7 @@ account with its `text-embedding-3-large` and `gpt-5.6-luna` deployments.
   its ARM id; and an older `api-version` in the connection target fails tool
   enumeration with HTTP 406. The **project** managed identity - which is not the
   account identity - also needs `Search Index Data Reader`, otherwise the first tool
-  call returns 403. `00_assign_roles.sh` assigns it.
+  call returns 403. `00_assign_roles.py` assigns it.
 - **`retrievalReasoningEffort` must be `low` or `medium`.** `auto` is accepted by the
   direct `/retrieve` endpoint but rejected by agent retrieval with
   `InvalidAgentRetrievalRequest`.
