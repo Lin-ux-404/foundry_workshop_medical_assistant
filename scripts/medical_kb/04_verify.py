@@ -16,6 +16,7 @@ read or printed. Run `az login` first.
 from __future__ import annotations
 
 import sys
+from collections import Counter
 
 from azure.core.exceptions import HttpResponseError
 
@@ -159,24 +160,23 @@ def check_retrieval(settings: Settings, documents: list[dict]) -> None:
             fail(f"{doc['file']}: no references returned")
             continue
 
-        cited: dict[str, tuple[str, int]] = {}
+        cited_count: Counter[str] = Counter()
+        cited_url: dict[str, str] = {}
         for ref in refs:
             source_data = ref.source_data or {}
             title = source_data.get("document_title")
             if not title:
                 continue
-            url, count = cited.get(title, (source_data.get("source_url") or "", 0))
-            cited[title] = (url or (source_data.get("source_url") or ""), count + 1)
-        for title, (url, count) in sorted(cited.items(), key=lambda kv: -kv[1][1]):
+            cited_count[title] += 1
+            cited_url.setdefault(title, source_data.get("source_url") or "")
+        for title, count in cited_count.most_common():
             print(f"      - {title}  ({count} refs)")
-            print(f"        {url}")
+            print(f"        {cited_url[title]}")
 
-        titles = set(cited)
-        urls = {u for u, _ in cited.values() if u}
-        if not urls:
+        if not any(cited_url.values()):
             fail(f"{doc['file']}: references carry no source_url")
-        if doc["document_title"] not in titles:
-            fail(f"{doc['file']}: expected document not among cited titles {sorted(titles)}")
+        if doc["document_title"] not in cited_count:
+            fail(f"{doc['file']}: expected document not among cited titles {sorted(cited_count)}")
 
 
 def main() -> None:
