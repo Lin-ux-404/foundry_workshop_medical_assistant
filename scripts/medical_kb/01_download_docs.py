@@ -13,6 +13,8 @@ import requests
 from common import documents_manifest, load_settings
 
 RETRY_ATTEMPTS = 3
+# iris.who.int returns 403 for the default python-requests user agent.
+HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; medical-kb-setup/1.0)"}
 
 
 def is_pdf(path) -> bool:
@@ -23,7 +25,7 @@ def download(url: str, target) -> None:
     last_error: Exception | None = None
     for attempt in range(1, RETRY_ATTEMPTS + 1):
         try:
-            response = requests.get(url, timeout=60)
+            response = requests.get(url, headers=HEADERS, timeout=60)
             response.raise_for_status()
             target.write_bytes(response.content)
             return
