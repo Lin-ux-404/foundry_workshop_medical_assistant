@@ -1,4 +1,4 @@
-# Day 3 — Application guide
+# Day 3 - Application guide
 
 **Placeholder.** This guide has no content yet.
 

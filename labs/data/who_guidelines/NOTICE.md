@@ -1,10 +1,10 @@
-# Third-party content notice — WHO guidelines
+# Third-party content notice - WHO guidelines
 
 The three PDFs downloaded into this directory by `scripts/medical_kb/01_download_docs.sh`
 are publications of the **World Health Organization (WHO)**. They are not authored by the
 maintainers of this repository, and they are not covered by this repository's own licence.
 
-The PDFs themselves are not committed — they are downloaded on demand and gitignored.
+The PDFs themselves are not committed - they are downloaded on demand and gitignored.
 This notice is committed so the terms travel with the repository.
 
 ## Licence
