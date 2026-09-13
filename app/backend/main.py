@@ -1,6 +1,6 @@
 """FastAPI application for the Agentic Medical Operations Assistant (starter).
 
-Run from the `backend/` folder:
+Run from the `app/backend/` folder:
     uvicorn main:app --reload
 """
 from contextlib import asynccontextmanager

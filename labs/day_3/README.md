@@ -1,12 +1,8 @@
-# Day 3 - Workflows and multi-agent orchestration
+# Day 3 - Application guide
 
-From a single agent to an orchestrated system.
+**Placeholder.** This guide has no content yet.
 
-1. Patient Intake Workflow (collect -> validate -> Triage Agent -> safety rules).
-2. Appointment Booking Workflow (retrieve -> recheck -> book -> no-show score -> confirm).
-3. Conditional routing based on the structured triage result.
-4. Split into specialized agents: Patient Assistant, Triage, Appointment, Knowledge, Admin.
-5. Pick a final track: priority scheduling, no-show optimization, admin copilot, or reliability.
-
-Milestone: agents reason, Foundry IQ grounds, tools act, and workflows run predictable
-business processes end to end.
+Day 3 is not a notebook. Participants work with the application in
+[`app/backend/`](../../app/backend) and [`app/frontend/`](../../app/frontend), which brings
+together everything built in Days 1 and 2: a deployed model, saved agents, a
+Foundry IQ knowledge base, guardrails, tools, and evaluations.

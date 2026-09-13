@@ -1,0 +1,20 @@
+{
+  "name": "${INDEXER}",
+  "description": "Extracts text and blob metadata from WHO guideline PDFs and projects chunks into the index.",
+  "dataSourceName": "${DATA_SOURCE}",
+  "skillsetName": "${SKILLSET}",
+  "targetIndexName": "${SEARCH_INDEX}",
+  "parameters": {
+    "batchSize": 1,
+    "maxFailedItems": 0,
+    "maxFailedItemsPerBatch": 0,
+    "configuration": {
+      "dataToExtract": "contentAndMetadata",
+      "parsingMode": "default",
+      "imageAction": "none",
+      "indexedFileNameExtensions": ".pdf"
+    }
+  },
+  "fieldMappings": [],
+  "outputFieldMappings": []
+}

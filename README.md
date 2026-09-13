@@ -1,58 +1,66 @@
 # Agentic Medical Operations Assistant
 
-Starter repo for the three-day hackathon. It gives you a working end-to-end
-slice: a React chat frontend talking to a FastAPI backend that runs an agent on
-**Microsoft Foundry** through the **Microsoft Agent Framework** (`agent_framework.ChatAgent`),
-including a **structured-output** example. Everything else in the brief is yours to build.
+A three-day Microsoft Foundry workshop repo, plus a working end-to-end
+reference app: a React chat frontend talking to a FastAPI backend that runs
+an agent on **Microsoft Foundry** via the **Microsoft Agent Framework**.
 
 > Educational demo only. It does not diagnose, does not replace a healthcare
 > professional, and uses synthetic data throughout.
 
-## What is already built
+## Repository layout
 
-- `backend/` FastAPI app with a clean, swappable structure:
-  - a single place that constructs the Foundry client (`clients/foundry_client.py`),
-  - a Patient Assistant and a Triage Agent, one file per agent under `agents/`,
-  - `POST /api/chat` free-text reply, `POST /api/triage` structured `TriageResult`, `GET /api/health`,
-  - Pydantic request/response and structured-output models (`schemas.py`),
-  - config via environment variables (`config.py`).
-- `frontend/` Vite + React + TypeScript chat UI that calls `/api/chat`.
-- `labs/` per-day lab stubs. `notebooks` for guided exercises can live here too.
+```
+app/
+  backend/           FastAPI app (main.py, config.py, clients/, agents/, routers/, schemas.py)
+                     Runs the agent(s) on Microsoft Foundry and exposes /api/chat, /api/triage, /api/health.
+  frontend/          Vite + React + TypeScript chat UI (src/)
+                     Calls the backend's /api/chat endpoint.
+labs/
+  day_1/ day_2/ day_3/   Foundry notebooks, one per topic (see below).
+  data/                  Datasets used by the labs (WHO guidelines, hospital IPC data).
+scripts/
+  medical_kb/        Provisions the Azure AI Search knowledge base the labs query.
+```
 
-## What you build
+## Labs
 
-Use the hackathon brief. In short:
+Work through the notebooks in `labs/` to learn Foundry through independent
+examples. Each runs from a fresh kernel. Labs 3 and 4 share a knowledge base,
+so run Lab 3 before Lab 4.
 
-- **Day 1** give agents real tools (availability + booking), persist to SQLite, show appointments to an admin.
-- **Day 2** ground answers with **Foundry IQ** + Azure AI Search; add a Medical Knowledge Agent with citations.
-- **Day 3** add **workflows** (Patient Intake, Appointment Booking, Priority Scheduling) and split into specialized agents.
+| Notebook | Topic |
+| --- | --- |
+| `day_1/01_deploy_a_model.ipynb` | Deploy a model, call the Responses API |
+| `day_1/02_prompt_agents.ipynb` | Save an agent, version its instructions |
+| `day_1/03_knowledge_bases_and_foundry_iq.ipynb` | Ground an agent in a Foundry IQ knowledge base |
+| `day_1/04_agent_framework_orchestration.ipynb` | Orchestrate a sequential multi-agent workflow |
+| `day_2/05_guardrails.ipynb` | Guardrails |
+| `day_2/06_tools.ipynb` | Function tools, tool-call round trip, approvals |
+| `day_2/07_evaluations_in_foundry.ipynb` | Evaluations in Foundry |
+| `day_3/README.md` | Application guide for `app/backend/` and `app/frontend/` |
 
-Suggested folders to add as you go: `agents/`, `workflows/`, `knowledge/`, `data/`,
-`models/`, `tests/` (see the brief's repository structure).
+Labs 3, 4 and 6 read from a knowledge base built from three published WHO
+clinical guidelines; Lab 6 also reads synthetic hospital data from
+`labs/data/hospital/ipc_self_assessment.json`. `scripts/medical_kb/` builds
+that knowledge base and is safe to rerun - see
+[`scripts/medical_kb/README.md`](scripts/medical_kb/README.md).
 
 ## Prerequisites
 
-- Python 3.10+ and Node 18+
-- An Azure AI Foundry project with a deployed chat model (e.g. `gpt-4o-mini`)
+- Python 3.11+ and Node 18+
+- An Azure AI Foundry project with a deployed chat model (the labs assume `gpt-5.6-luna`)
 - Azure CLI: run `az login` (the backend uses `DefaultAzureCredential`, no API keys)
 
 ## Run the backend
 
 ```bash
-cd backend
+cd app/backend
 python -m venv .venv
 # Windows:  .venv\Scripts\activate
 # macOS/Linux:  source .venv/bin/activate
 pip install -r requirements.txt      # if agent-framework is not found: pip install --pre agent-framework
 cp .env.example .env                  # then fill in your Foundry endpoint + model
 uvicorn main:app --reload             # http://localhost:8000  (docs at /docs)
-```
-
-Fill `.env`:
-
-```
-AZURE_AI_PROJECT_ENDPOINT=https://<your-resource>.services.ai.azure.com/api/projects/<your-project>
-AZURE_AI_MODEL_DEPLOYMENT_NAME=gpt-4o-mini
 ```
 
 Quick check:
@@ -66,46 +74,15 @@ curl -X POST http://localhost:8000/api/chat \
 ## Run the frontend
 
 ```bash
-cd frontend
+cd app/frontend
 npm install
 npm run dev                           # http://localhost:3000
 ```
 
-The dev server proxies `/api` to `http://localhost:8000/docs`, so run the backend first.
-
-## How the agent + structured output works
-
-Each file in `agents/` builds a `ChatAgent` from the Foundry client and holds that agent's
-instructions. `POST /api/triage` asks the Triage Agent to return the `TriageResult`
-schema (`response_format=TriageResult`) and reads the parsed object from
-`result.value`, with a text-JSON fallback. This is the pattern to reuse for every
-structured step later (intake, priority rules, admin analytics).
-
-To use a different client (for example `AzureOpenAIChatClient` if you want the most
-reliable structured outputs), change only `clients/foundry_client.py`. The agents and routes
-stay the same.
-
-## Repository layout
-
-```
-backend/
-  main.py            FastAPI app + lifespan (creates the Foundry client once)
-  config.py          env-based settings
-  clients/           foundry_client.py - the ONE place the client is built (swappable)
-  agents/            one file per agent: patient_assistant.py, triage_agent.py
-  schemas.py         Pydantic API models + TriageResult (structured output)
-  routers/           chat.py (patient endpoints), health.py
-  requirements.txt
-  .env.example
-frontend/
-  src/               main.tsx, App.tsx, api.ts, components/Chat.tsx, styles.css
-  vite.config.ts     dev proxy to the backend
-labs/
-  day_1/ day_2/ day_3/
-```
+The dev server proxies `/api` to `http://localhost:8000`, so run the backend first.
 
 ## Responsible AI
 
 Keep the disclaimer visible, keep data synthetic, escalate on severe/ambiguous
-symptoms, ground informational answers (Day 2), and give agents purpose-built
-tools rather than unrestricted database access.
+symptoms, ground informational answers, and give agents purpose-built tools
+rather than unrestricted database access.

@@ -1,0 +1,11 @@
+{
+  "name": "${DATA_SOURCE}",
+  "description": "WHO clinical guideline PDFs in Azure Blob Storage, read with the search service managed identity.",
+  "type": "azureblob",
+  "credentials": {
+    "connectionString": "ResourceId=${STORAGE_RESOURCE_ID}"
+  },
+  "container": {
+    "name": "${BLOB_CONTAINER}"
+  }
+}

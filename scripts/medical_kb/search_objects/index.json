@@ -1,0 +1,63 @@
+{
+  "name": "${SEARCH_INDEX}",
+  "description": "Chunked WHO clinical guidelines with hybrid (keyword + vector) search and semantic ranking.",
+  "fields": [
+    { "name": "chunk_id", "type": "Edm.String", "key": true, "searchable": true, "filterable": true, "retrievable": true, "sortable": true, "analyzer": "keyword" },
+    { "name": "parent_id", "type": "Edm.String", "searchable": false, "filterable": true, "retrievable": true, "sortable": false },
+    { "name": "chunk", "type": "Edm.String", "searchable": true, "filterable": false, "retrievable": true, "sortable": false },
+    { "name": "document_title", "type": "Edm.String", "searchable": true, "filterable": true, "retrievable": true, "sortable": true },
+    { "name": "source_url", "type": "Edm.String", "searchable": false, "filterable": true, "retrievable": true, "sortable": false },
+    { "name": "publisher", "type": "Edm.String", "searchable": true, "filterable": true, "retrievable": true, "sortable": false },
+    { "name": "publication_id", "type": "Edm.String", "searchable": true, "filterable": true, "retrievable": true, "sortable": false },
+    { "name": "topic", "type": "Edm.String", "searchable": true, "filterable": true, "retrievable": true, "sortable": false, "facetable": true },
+    { "name": "license", "type": "Edm.String", "searchable": false, "filterable": true, "retrievable": true, "sortable": false, "facetable": true },
+    { "name": "license_url", "type": "Edm.String", "searchable": false, "filterable": false, "retrievable": true, "sortable": false },
+    { "name": "citation", "type": "Edm.String", "searchable": false, "filterable": false, "retrievable": true, "sortable": false },
+    { "name": "metadata_storage_name", "type": "Edm.String", "searchable": true, "filterable": true, "retrievable": true, "sortable": false },
+    { "name": "metadata_storage_path", "type": "Edm.String", "searchable": false, "filterable": true, "retrievable": true, "sortable": false },
+    {
+      "name": "text_vector",
+      "type": "Collection(Edm.Single)",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": false,
+      "sortable": false,
+      "stored": false,
+      "dimensions": ${EMBEDDING_DIMENSIONS},
+      "vectorSearchProfile": "who-vector-profile"
+    }
+  ],
+  "vectorSearch": {
+    "algorithms": [
+      { "name": "who-hnsw", "kind": "hnsw", "hnswParameters": { "m": 4, "efConstruction": 400, "efSearch": 500, "metric": "cosine" } }
+    ],
+    "vectorizers": [
+      {
+        "name": "who-openai-vectorizer",
+        "kind": "azureOpenAI",
+        "azureOpenAIParameters": {
+          "resourceUri": "${FOUNDRY_ENDPOINT}",
+          "deploymentId": "${EMBEDDING_DEPLOYMENT}",
+          "modelName": "${EMBEDDING_MODEL}"
+        }
+      }
+    ],
+    "profiles": [
+      { "name": "who-vector-profile", "algorithm": "who-hnsw", "vectorizer": "who-openai-vectorizer" }
+    ]
+  },
+  "semantic": {
+    "defaultConfiguration": "${SEMANTIC_CONFIG}",
+    "configurations": [
+      {
+        "name": "${SEMANTIC_CONFIG}",
+        "prioritizedFields": {
+          "titleField": { "fieldName": "document_title" },
+          "prioritizedContentFields": [ { "fieldName": "chunk" } ],
+          "prioritizedKeywordsFields": [ { "fieldName": "topic" }, { "fieldName": "publisher" } ]
+        }
+      }
+    ]
+  },
+  "similarity": { "@odata.type": "#Microsoft.Azure.Search.BM25Similarity" }
+}
