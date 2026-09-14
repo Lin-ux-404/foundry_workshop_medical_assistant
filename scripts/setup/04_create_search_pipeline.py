@@ -14,6 +14,7 @@ OBJECTS_DIR = HERE / "search_objects"
 
 RUN_POLL_INTERVAL_SECONDS = 15
 RUN_POLL_MAX_ATTEMPTS = 80
+RUN_RETRY_ATTEMPTS = 3
 
 
 def create_pipeline(settings: Settings) -> None:
@@ -46,6 +47,19 @@ def create_pipeline(settings: Settings) -> None:
     logger.success(f"knowledge base {settings.knowledge_base}")
 
 
+def _wait_for_run(indexer_client, settings: Settings, previous_start):
+    """Poll until a run finishes that started *after* ``previous_start``,
+    otherwise a stale result from an earlier run ends the wait immediately."""
+    final = None
+    for _ in range(RUN_POLL_MAX_ATTEMPTS):
+        time.sleep(RUN_POLL_INTERVAL_SECONDS)
+        status = indexer_client.get_indexer_status(settings.indexer)
+        final = status.last_result
+        if final is not None and final.status != "inProgress" and final.start_time != previous_start:
+            break
+    return final
+
+
 def run_and_wait(settings: Settings, previous_start, reset: bool) -> None:
     indexer_client = search_indexer_client(settings)
 
@@ -70,16 +84,28 @@ def run_and_wait(settings: Settings, previous_start, reset: bool) -> None:
         # would just queue a redundant second run right behind it.
         logger.info("waiting for the run the indexer update already triggered")
 
-    # Wait for a run that finished *after* the one we observed before
-    # create_pipeline() touched the indexer, otherwise a stale 'success' from
-    # an earlier run ends the wait immediately.
-    final = None
-    for _ in range(RUN_POLL_MAX_ATTEMPTS):
-        time.sleep(RUN_POLL_INTERVAL_SECONDS)
-        status = indexer_client.get_indexer_status(settings.indexer)
-        final = status.last_result
-        if final is not None and final.status != "inProgress" and final.start_time != previous_start:
-            break
+    final = _wait_for_run(indexer_client, settings, previous_start)
+
+    # A model deployment created moments earlier in 00_provision_infra.py can
+    # report "Succeeded" before it's actually invokable, so the embedding
+    # skill's call to it can fail with DeploymentNotFound on the very first
+    # run. Azure Search only re-processes documents that failed (unchanged
+    # blobs that already succeeded are skipped via change tracking), so just
+    # re-running the indexer a few times gives the deployment time to warm up.
+    attempts = 0
+    while (
+        final is not None
+        and final.failed_item_count
+        and attempts < RUN_RETRY_ATTEMPTS
+    ):
+        attempts += 1
+        logger.warning(
+            f"{final.failed_item_count} item(s) failed (likely a model deployment that "
+            f"wasn't invokable yet); retrying the run ({attempts}/{RUN_RETRY_ATTEMPTS})"
+        )
+        previous_start = final.start_time
+        indexer_client.run_indexer(settings.indexer)
+        final = _wait_for_run(indexer_client, settings, previous_start)
 
     if final is None:
         logger.warning("no indexer run result observed")
