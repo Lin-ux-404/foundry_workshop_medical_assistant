@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Download the three WHO guideline PDFs. Safe to rerun: existing valid PDFs are kept.
 
-    python scripts/medical_kb/02_download_docs.py
+    python scripts/setup/02_download_docs.py
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ from common import documents_manifest, load_settings
 
 RETRY_ATTEMPTS = 3
 # iris.who.int returns 403 for the default python-requests user agent.
-HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; medical-kb-setup/1.0)"}
+HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; foundry-workshop-setup/1.0)"}
 
 
 def is_pdf(path) -> bool:

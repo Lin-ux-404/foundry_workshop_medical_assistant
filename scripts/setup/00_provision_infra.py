@@ -7,7 +7,7 @@ every step is a create-or-update.
 
     az login
     export SUBSCRIPTION_ID=<your-subscription-id>
-    python scripts/medical_kb/00_provision_infra.py --resource-group my-rg
+    python scripts/setup/00_provision_infra.py --resource-group my-rg
 
 Every object name, region and SKU defaults to the umc-dev workshop setup and
 can be overridden via environment variable -- see `common.py`. Authentication
@@ -154,7 +154,7 @@ def resolve_model_version(
     Deployments pin a specific model version, and Azure retires old versions
     over time. Reading the version marked ``is_default_version`` from the
     catalogue (instead of hard-coding one here) means this script keeps
-    working after WHO... after Azure ships a new default.
+    working after Azure ships a new default.
     """
     candidates = [m for m in cognitive_client.models.list(location) if m.model.name == model_name]
     if not candidates:

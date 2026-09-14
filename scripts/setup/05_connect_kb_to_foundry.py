@@ -2,7 +2,7 @@
 """Create the Foundry project connection that lets agents call the knowledge base
 over MCP. Idempotent: a PUT with the same body is a no-op.
 
-    python scripts/medical_kb/05_connect_kb_to_foundry.py
+    python scripts/setup/05_connect_kb_to_foundry.py
 
 The connection uses ProjectManagedIdentity, so no secret is stored anywhere -
 the project's own identity authenticates to Azure AI Search, which is why

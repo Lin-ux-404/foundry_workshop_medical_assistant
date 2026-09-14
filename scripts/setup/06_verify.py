@@ -10,7 +10,7 @@ Checks:
 Authentication is Microsoft Entra only (DefaultAzureCredential); no keys are
 read or printed. Run `az login` first.
 
-    python scripts/medical_kb/06_verify.py
+    python scripts/setup/06_verify.py
 """
 
 from __future__ import annotations

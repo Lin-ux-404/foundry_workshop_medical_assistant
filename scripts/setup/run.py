@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""End-to-end, rerunnable setup for the WHO medical knowledge base.
+"""End-to-end, rerunnable setup for the workshop's Azure environment and
+WHO medical knowledge base.
 
     az login
-    python scripts/medical_kb/setup.py --resource-group my-rg
-    python scripts/medical_kb/setup.py --resource-group my-rg --reset-indexer
-    python scripts/medical_kb/setup.py --resource-group my-rg --skip-provision
+    python scripts/setup/run.py --resource-group my-rg
+    python scripts/setup/run.py --resource-group my-rg --reset-indexer
+    python scripts/setup/run.py --resource-group my-rg --skip-provision
 
 Every step is idempotent, and all auth is Microsoft Entra - no secrets are
 read, written, or printed.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Create the blob container and upload the WHO PDFs with citation metadata.
 
-    python scripts/medical_kb/03_upload_blobs.py
+    python scripts/setup/03_upload_blobs.py
 
 Uses Microsoft Entra auth only (``DefaultAzureCredential``); no account keys
 are read or printed.

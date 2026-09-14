@@ -1,18 +1,20 @@
-# WHO medical knowledge base
+# Workshop environment setup
 
-Builds a Foundry IQ knowledge base from three WHO clinical guideline PDFs for
-the Day 1 grounded-answers lab. Every script is plain Python calling official
-Azure SDKs, is safe to rerun, and authenticates with Microsoft Entra
-(`az login`) — no keys are stored, read, or printed.
+Stands up the Azure environment the workshop labs run against — resource
+group, storage account, Azure AI Search service, Foundry account/project, and
+model deployments — then builds a Foundry IQ knowledge base from three WHO
+clinical guideline PDFs for the Day 1 grounded-answers lab. Every script is
+plain Python calling official Azure SDKs, is safe to rerun, and authenticates
+with Microsoft Entra (`az login`) — no keys are stored, read, or printed.
 
 ## Run it
 
 ```bash
 az login
 export SUBSCRIPTION_ID=<your-subscription-id>
-pip install -r scripts/medical_kb/requirements.txt
+pip install -r scripts/setup/requirements.txt
 
-python scripts/medical_kb/setup.py --resource-group <your-resource-group>
+python scripts/setup/run.py --resource-group <your-resource-group>
 ```
 
 This provisions everything from an empty subscription: the resource group,
@@ -23,7 +25,7 @@ Add `--reset-indexer` to force a full re-ingest, or `--skip-provision` if the
 storage account, search service, and Foundry project already exist and you
 only want to (re)build the knowledge base on top of them.
 
-`setup.py` runs the numbered scripts (`00_provision_infra.py` ...
+`run.py` runs the numbered scripts (`00_provision_infra.py` ...
 `06_verify.py`) in order; run any of them directly to redo just that step.
 Names, endpoints, regions, SKUs, and models default to the umc-dev workshop
 setup and can be overridden via env var — see `common.py`. The identity

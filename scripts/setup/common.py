@@ -1,5 +1,5 @@
-"""Shared configuration and Azure SDK client factories for the WHO medical
-knowledge base pipeline.
+"""Shared configuration and Azure SDK client factories for the workshop's
+environment provisioning and WHO medical knowledge base pipeline.
 
 Every script in this folder imports this module so there is exactly one place
 that defines names, endpoints, and authentication. No keys or connection
@@ -36,7 +36,8 @@ def _require(name: str) -> str:
 
 @dataclass(frozen=True)
 class Settings:
-    """Non-secret configuration for the WHO medical knowledge base pipeline."""
+    """Non-secret configuration for the workshop's Azure environment and
+    WHO medical knowledge base pipeline."""
 
     subscription_id: str
     resource_group: str
