@@ -4,6 +4,7 @@
     az login
     python scripts/medical_kb/setup.py --resource-group my-rg
     python scripts/medical_kb/setup.py --resource-group my-rg --reset-indexer
+    python scripts/medical_kb/setup.py --resource-group my-rg --skip-provision
 
 Every step is idempotent, and all auth is Microsoft Entra - no secrets are
 read, written, or printed.
@@ -34,6 +35,12 @@ def main() -> None:
     parser.add_argument(
         "--reset-indexer", action="store_true", help="Force a full re-ingest of all documents."
     )
+    parser.add_argument(
+        "--skip-provision",
+        action="store_true",
+        help="Skip 00_provision_infra.py, e.g. when the storage account, search "
+        "service, and Foundry project already exist.",
+    )
     args = parser.parse_args()
 
     # Every step reads its config from common.py, which reads this env var -
@@ -41,23 +48,37 @@ def main() -> None:
     # about --resource-group.
     os.environ["RESOURCE_GROUP"] = args.resource_group
 
-    print("\n=== 0/5 role assignments")
-    run("00_assign_roles.py")
+    steps = 6 if args.skip_provision else 7
+    step = 0
 
-    print("\n=== 1/5 download WHO PDFs")
-    run("01_download_docs.py")
+    if not args.skip_provision:
+        step += 1
+        print(f"\n=== {step}/{steps} provision infrastructure")
+        run("00_provision_infra.py")
 
-    print("\n=== 2/5 upload to blob storage")
-    run("02_upload_blobs.py")
+    step += 1
+    print(f"\n=== {step}/{steps} role assignments")
+    run("01_assign_roles.py")
 
-    print("\n=== 3/5 create search pipeline + run ingestion")
-    run("03_create_search_pipeline.py", *(["--reset"] if args.reset_indexer else []))
+    step += 1
+    print(f"\n=== {step}/{steps} download WHO PDFs")
+    run("02_download_docs.py")
 
-    print("\n=== 4/5 connect the knowledge base to Foundry")
+    step += 1
+    print(f"\n=== {step}/{steps} upload to blob storage")
+    run("03_upload_blobs.py")
+
+    step += 1
+    print(f"\n=== {step}/{steps} create search pipeline + run ingestion")
+    run("04_create_search_pipeline.py", *(["--reset"] if args.reset_indexer else []))
+
+    step += 1
+    print(f"\n=== {step}/{steps} connect the knowledge base to Foundry")
     run("05_connect_kb_to_foundry.py")
 
-    print("\n=== 5/5 verify")
-    run("04_verify.py")
+    step += 1
+    print(f"\n=== {step}/{steps} verify")
+    run("06_verify.py")
 
 
 if __name__ == "__main__":
