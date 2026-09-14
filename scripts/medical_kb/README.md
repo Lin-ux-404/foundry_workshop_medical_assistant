@@ -15,11 +15,21 @@ pip install -r scripts/medical_kb/requirements.txt
 python scripts/medical_kb/setup.py --resource-group <your-resource-group>
 ```
 
-Add `--reset-indexer` to force a full re-ingest. `setup.py` runs the numbered
-scripts (`00_assign_roles.py` ... `05_connect_kb_to_foundry.py`) in the right
-order; run any of them directly to redo just that step. Names, endpoints, and
-models default to the umc-dev workshop setup and can be overridden via env
-var — see `common.py`.
+This provisions everything from an empty subscription: the resource group,
+storage account, Azure AI Search service, the Foundry account and project,
+the two model deployments, then downloads the PDFs, uploads them, builds the
+search pipeline and knowledge base, connects it to Foundry, and verifies it.
+Add `--reset-indexer` to force a full re-ingest, or `--skip-provision` if the
+storage account, search service, and Foundry project already exist and you
+only want to (re)build the knowledge base on top of them.
+
+`setup.py` runs the numbered scripts (`00_provision_infra.py` ...
+`06_verify.py`) in order; run any of them directly to redo just that step.
+Names, endpoints, regions, SKUs, and models default to the umc-dev workshop
+setup and can be overridden via env var — see `common.py`. The identity
+running `00_provision_infra.py` needs Owner or Contributor on the target
+subscription (or the resource group, if it already exists); every other
+script only needs the roles `01_assign_roles.py` grants.
 
 ## Licensing
 
