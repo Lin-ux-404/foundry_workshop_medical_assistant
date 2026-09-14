@@ -9,7 +9,7 @@ an agent on **Microsoft Foundry** via the **Microsoft Agent Framework**.
 
 ## Repository layout
 
-```
+```text
 app/
   backend/           FastAPI app (main.py, config.py, clients/, agents/, routers/, schemas.py)
                      Runs the agent(s) on Microsoft Foundry and exposes /api/chat, /api/triage, /api/health.
@@ -25,8 +25,8 @@ scripts/
 ## Labs
 
 Work through the notebooks in `labs/` to learn Foundry through independent
-examples. Each runs from a fresh kernel. Labs 3 and 4 share a knowledge base,
-so run Lab 3 before Lab 4.
+examples. Each runs from a fresh kernel. Lab 3 introduces the knowledge base
+reused by the later grounded-agent and live RAG labs.
 
 | Notebook | Topic |
 | --- | --- |
@@ -34,21 +34,31 @@ so run Lab 3 before Lab 4.
 | `day_1/02_prompt_agents.ipynb` | Save an agent, version its instructions |
 | `day_1/03_knowledge_bases_and_foundry_iq.ipynb` | Ground an agent in a Foundry IQ knowledge base |
 | `day_1/04_agent_framework_orchestration.ipynb` | Orchestrate a sequential multi-agent workflow |
-| `day_2/05_guardrails.ipynb` | Guardrails |
+| `day_2/05_guardrails.ipynb` | Create an account guardrail, assign it to an agent, test and clean up |
 | `day_2/06_tools.ipynb` | Function tools, tool-call round trip, approvals |
-| `day_2/07_evaluations_in_foundry.ipynb` | Evaluations in Foundry |
+| `day_2/07_evaluations_in_foundry.ipynb` | OpenTelemetry tracing and privacy-safe observability |
+| `day_2/08_grounded_answer_evaluation.ipynb` | Retrieval, groundedness and relevance evaluation |
+| `day_2/09_agent_trajectory_evaluation.ipynb` | System and process evaluation of function-tool trajectories |
+| `day_2/10_tool_call_regression.ipynb` | Exact and semantic tool-call regression testing |
+| `day_2/11_red_team_security_testing.ipynb` | Local policy-abuse tests and optional cloud red teaming |
+| `day_2/12_end_to_end_search_rag_evaluation.ipynb` | Live Azure AI Search RAG evaluation |
+| `day_2/13_end_to_end_foundry_iq_evaluation.ipynb` | Repeated live Foundry IQ RAG evaluation |
 | `day_3/README.md` | Application guide for `app/backend/` and `app/frontend/` |
 
-Labs 3, 4 and 6 read from a knowledge base built from three published WHO
-clinical guidelines; Lab 6 also reads synthetic hospital data from
-`labs/data/hospital/ipc_self_assessment.json`. `scripts/setup/` provisions the
-Azure environment and builds that knowledge base, and is safe to rerun — see
-[`scripts/setup/README.md`](scripts/setup/README.md).
+Labs 3, 4, 6, 7, 12 and 13 use a knowledge base built from three published WHO
+clinical guidelines. Labs 6, 9 and 10 use synthetic hospital IPC data or its
+tool contracts. Labs 12 and 13 share a versioned evaluation benchmark and
+deterministic helper module. `scripts/medical_kb/` builds the knowledge base
+and is safe to rerun - see
+[`scripts/medical_kb/README.md`](scripts/medical_kb/README.md).
+
+See [`labs/day_2/README.md`](labs/day_2/README.md) for the evaluation learning
+path, expected artifacts, preview fallbacks and additional permissions.
 
 ## Prerequisites
 
 - Python 3.11+ and Node 18+
-- An Azure AI Foundry project with a deployed chat model (the labs assume `gpt-5.4-mini`)
+- An Azure AI Foundry project with a deployed chat model (the current workshop uses `gpt-5.6-terra`)
 - Azure CLI: run `az login` (the backend uses `DefaultAzureCredential`, no API keys)
 
 ## Run the backend

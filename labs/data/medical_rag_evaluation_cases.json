@@ -1,0 +1,308 @@
+{
+  "schema_version": "1.0",
+  "answer_contract_version": "medical-required-parts-v1",
+  "dataset_id": "umc-who-rag-evaluation-v1",
+  "description": "Workshop benchmark for the three WHO guideline documents already indexed by this repository. Questions are educational and never patient-specific.",
+  "cases": [
+    {
+      "case_id": "SEARCH-IPC-STAFFING",
+      "target": "azure_ai_search",
+      "query": "At acute health care facility level, what does WHO recommend about workload, staffing and bed occupancy, and why does this matter for infection prevention and control?",
+      "ground_truth": "WHO treats workload, staffing and bed occupancy as a core IPC component. Staffing should be appropriate for patient workload, and bed occupancy should not exceed the facility's standard capacity, with one patient per bed and adequate spacing. These organizational conditions affect the risk of health care-associated infection and the ability to apply IPC practices reliably.",
+      "search_filter": "publication_id eq '9789241549929'",
+      "required_answer_parts": [
+        {
+          "id": "core_component",
+          "description": "identify workload, staffing and bed occupancy as a facility-level IPC core component"
+        },
+        {
+          "id": "staffing",
+          "description": "explain that staffing should match patient workload"
+        },
+        {
+          "id": "occupancy",
+          "description": "state the bed-capacity, one-patient-per-bed or spacing recommendation"
+        },
+        {
+          "id": "ipc_rationale",
+          "description": "connect these conditions to IPC or health care-associated infection risk"
+        }
+      ],
+      "expected_evidence_groups": [
+        {
+          "name": "WHO IPC core-components guideline",
+          "any_of": [
+            "9789241549929",
+            "who-ipc-core-components.pdf",
+            "Guidelines on core components of infection prevention and control programmes at the national and acute health care facility level"
+          ]
+        }
+      ],
+      "required_context_signals": [
+        {
+          "id": "staffing",
+          "any_of": [
+            "staffing",
+            "workload"
+          ]
+        },
+        {
+          "id": "occupancy",
+          "any_of": [
+            "bed occupancy",
+            "one patient per bed",
+            "bed capacity"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "SEARCH-HYPERTENSION-TREATMENT",
+      "target": "azure_ai_search",
+      "query": "According to the WHO guideline for adults, at what confirmed blood pressure should pharmacological treatment usually start, and what treatment target is recommended for people without comorbidities?",
+      "ground_truth": "WHO recommends starting pharmacological antihypertensive treatment for people with a confirmed diagnosis of hypertension at a systolic blood pressure of at least 140 mmHg or a diastolic blood pressure of at least 90 mmHg. For people with hypertension and no comorbidities, the recommended treatment target is below 140/90 mmHg.",
+      "search_filter": "publication_id eq '9789240033986'",
+      "required_answer_parts": [
+        {
+          "id": "confirmed_diagnosis",
+          "description": "make clear that the treatment threshold applies to a confirmed diagnosis"
+        },
+        {
+          "id": "initiation_threshold",
+          "description": "state the 140 mmHg systolic or 90 mmHg diastolic initiation threshold"
+        },
+        {
+          "id": "general_target",
+          "description": "state the below 140/90 mmHg target for people without comorbidities"
+        }
+      ],
+      "expected_evidence_groups": [
+        {
+          "name": "WHO hypertension guideline",
+          "any_of": [
+            "9789240033986",
+            "who-hypertension-pharmacological-treatment.pdf",
+            "Guideline for the pharmacological treatment of hypertension in adults"
+          ]
+        }
+      ],
+      "required_context_signals": [
+        {
+          "id": "threshold",
+          "any_of": [
+            "140 mmhg",
+            "90 mmhg",
+            "140/90"
+          ]
+        },
+        {
+          "id": "target",
+          "any_of": [
+            "target blood pressure",
+            "treatment target",
+            "<140/90"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "SEARCH-DIABETES-DIAGNOSIS",
+      "target": "azure_ai_search",
+      "query": "According to WHO HEARTS-D, which blood tests can be used to diagnose type 2 diabetes, and why should an abnormal result in a person without symptoms be confirmed?",
+      "ground_truth": "WHO HEARTS-D describes diagnosis using plasma glucose testing, including fasting plasma glucose, a two-hour oral glucose tolerance test, or random plasma glucose when classic symptoms are present, and it also describes HbA1c where appropriate. In a person without symptoms, an abnormal result should be repeated or confirmed on another day to reduce the risk of a false diagnosis.",
+      "search_filter": "publication_id eq 'WHO-UCN-NCD-20.1'",
+      "required_answer_parts": [
+        {
+          "id": "glucose_tests",
+          "description": "name fasting, two-hour oral glucose tolerance or symptom-linked random plasma glucose testing"
+        },
+        {
+          "id": "hba1c",
+          "description": "mention HbA1c as a diagnostic option where appropriate"
+        },
+        {
+          "id": "confirmation",
+          "description": "explain that an asymptomatic abnormal result should be repeated or confirmed"
+        }
+      ],
+      "expected_evidence_groups": [
+        {
+          "name": "WHO HEARTS-D guideline",
+          "any_of": [
+            "WHO-UCN-NCD-20.1",
+            "who-hearts-d-diabetes.pdf",
+            "HEARTS D: Diagnosis and management of type 2 diabetes"
+          ]
+        }
+      ],
+      "required_context_signals": [
+        {
+          "id": "diagnostic_tests",
+          "any_of": [
+            "fasting plasma glucose",
+            "oral glucose tolerance",
+            "hba1c"
+          ]
+        },
+        {
+          "id": "confirmation",
+          "any_of": [
+            "repeat",
+            "confirm",
+            "another day"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "IQ-IPC-STAFFING",
+      "target": "foundry_iq",
+      "query": "At acute health care facility level, what does WHO recommend about workload, staffing and bed occupancy, and why does this matter for infection prevention and control?",
+      "ground_truth": "WHO treats workload, staffing and bed occupancy as a core IPC component. Staffing should be appropriate for patient workload, and bed occupancy should not exceed the facility's standard capacity, with one patient per bed and adequate spacing. These organizational conditions affect the risk of health care-associated infection and the ability to apply IPC practices reliably.",
+      "knowledge_source_filter": "publication_id eq '9789241549929'",
+      "required_answer_parts": [
+        {
+          "id": "core_component",
+          "description": "identify workload, staffing and bed occupancy as a facility-level IPC core component"
+        },
+        {
+          "id": "staffing",
+          "description": "explain that staffing should match patient workload"
+        },
+        {
+          "id": "occupancy",
+          "description": "state the bed-capacity, one-patient-per-bed or spacing recommendation"
+        },
+        {
+          "id": "ipc_rationale",
+          "description": "connect these conditions to IPC or health care-associated infection risk"
+        }
+      ],
+      "expected_evidence_groups": [
+        {
+          "name": "WHO IPC core-components guideline",
+          "any_of": [
+            "9789241549929",
+            "who-ipc-core-components.pdf",
+            "Guidelines on core components of infection prevention and control programmes at the national and acute health care facility level"
+          ]
+        }
+      ],
+      "required_context_signals": [
+        {
+          "id": "staffing",
+          "any_of": [
+            "staffing",
+            "workload"
+          ]
+        },
+        {
+          "id": "occupancy",
+          "any_of": [
+            "bed occupancy",
+            "one patient per bed",
+            "bed capacity"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "IQ-HYPERTENSION-TREATMENT",
+      "target": "foundry_iq",
+      "query": "According to the WHO guideline for adults, at what confirmed blood pressure should pharmacological treatment usually start, and what treatment target is recommended for people without comorbidities?",
+      "ground_truth": "WHO recommends starting pharmacological antihypertensive treatment for people with a confirmed diagnosis of hypertension at a systolic blood pressure of at least 140 mmHg or a diastolic blood pressure of at least 90 mmHg. For people with hypertension and no comorbidities, the recommended treatment target is below 140/90 mmHg.",
+      "knowledge_source_filter": "publication_id eq '9789240033986'",
+      "required_answer_parts": [
+        {
+          "id": "confirmed_diagnosis",
+          "description": "make clear that the treatment threshold applies to a confirmed diagnosis"
+        },
+        {
+          "id": "initiation_threshold",
+          "description": "state the 140 mmHg systolic or 90 mmHg diastolic initiation threshold"
+        },
+        {
+          "id": "general_target",
+          "description": "state the below 140/90 mmHg target for people without comorbidities"
+        }
+      ],
+      "expected_evidence_groups": [
+        {
+          "name": "WHO hypertension guideline",
+          "any_of": [
+            "9789240033986",
+            "who-hypertension-pharmacological-treatment.pdf",
+            "Guideline for the pharmacological treatment of hypertension in adults"
+          ]
+        }
+      ],
+      "required_context_signals": [
+        {
+          "id": "threshold",
+          "any_of": [
+            "140 mmhg",
+            "90 mmhg",
+            "140/90"
+          ]
+        },
+        {
+          "id": "target",
+          "any_of": [
+            "target blood pressure",
+            "treatment target",
+            "<140/90"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "IQ-DIABETES-DIAGNOSIS",
+      "target": "foundry_iq",
+      "query": "According to WHO HEARTS-D, which blood tests can be used to diagnose type 2 diabetes, and why should an abnormal result in a person without symptoms be confirmed?",
+      "ground_truth": "WHO HEARTS-D describes diagnosis using plasma glucose testing, including fasting plasma glucose, a two-hour oral glucose tolerance test, or random plasma glucose when classic symptoms are present, and it also describes HbA1c where appropriate. In a person without symptoms, an abnormal result should be repeated or confirmed on another day to reduce the risk of a false diagnosis.",
+      "knowledge_source_filter": "publication_id eq 'WHO-UCN-NCD-20.1'",
+      "required_answer_parts": [
+        {
+          "id": "glucose_tests",
+          "description": "name fasting, two-hour oral glucose tolerance or symptom-linked random plasma glucose testing"
+        },
+        {
+          "id": "hba1c",
+          "description": "mention HbA1c as a diagnostic option where appropriate"
+        },
+        {
+          "id": "confirmation",
+          "description": "explain that an asymptomatic abnormal result should be repeated or confirmed"
+        }
+      ],
+      "expected_evidence_groups": [
+        {
+          "name": "WHO HEARTS-D guideline",
+          "any_of": [
+            "WHO-UCN-NCD-20.1",
+            "who-hearts-d-diabetes.pdf",
+            "HEARTS D: Diagnosis and management of type 2 diabetes"
+          ]
+        }
+      ],
+      "required_context_signals": [
+        {
+          "id": "diagnostic_tests",
+          "any_of": [
+            "fasting plasma glucose",
+            "oral glucose tolerance",
+            "hba1c"
+          ]
+        },
+        {
+          "id": "confirmation",
+          "any_of": [
+            "repeat",
+            "confirm",
+            "another day"
+          ]
+        }
+      ]
+    }
+  ]
+}
