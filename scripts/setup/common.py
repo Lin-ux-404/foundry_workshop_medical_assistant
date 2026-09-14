@@ -1,12 +1,4 @@
-"""Shared configuration and Azure SDK client factories for the workshop's
-environment provisioning and WHO medical knowledge base pipeline.
-
-Every script in this folder imports this module so there is exactly one place
-that defines names, endpoints, and authentication. No keys or connection
-secrets live here: everything authenticates with Microsoft Entra
-(``DefaultAzureCredential``), which picks up your ``az login`` session for
-local runs.
-"""
+"""Shared configuration and Azure SDK client factories for the workshop's setup pipeline."""
 
 from __future__ import annotations
 

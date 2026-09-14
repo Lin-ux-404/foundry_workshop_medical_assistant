@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
-"""Idempotently assign the RBAC roles the pipeline needs.
-
-    python scripts/setup/01_assign_roles.py
-
-Uses the same Microsoft Entra session as the rest of the pipeline
-(``DefaultAzureCredential``): run ``az login`` first. Every assignment is
-checked before it is created, so this is safe to rerun.
-"""
+"""Idempotently assign the RBAC roles the pipeline needs."""
 
 from __future__ import annotations
 

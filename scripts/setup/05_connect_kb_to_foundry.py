@@ -1,19 +1,5 @@
 #!/usr/bin/env python3
-"""Create the Foundry project connection that lets agents call the knowledge base
-over MCP. Idempotent: a PUT with the same body is a no-op.
-
-    python scripts/setup/05_connect_kb_to_foundry.py
-
-The connection uses ProjectManagedIdentity, so no secret is stored anywhere -
-the project's own identity authenticates to Azure AI Search, which is why
-01_assign_roles.py grants that identity Search Index Data Reader.
-
-There is no dedicated management SDK for Foundry project connections yet, so
-this uses the generic ARM resource client (`azure-mgmt-resource`) instead of a
-raw REST call -- the resource type and API version are the only
-preview-specific bits, everything else (auth, retries, polling) comes from the
-SDK.
-"""
+"""Create the Foundry project connection that lets agents call the knowledge base over MCP (idempotent)."""
 
 from __future__ import annotations
 

@@ -1,28 +1,5 @@
 #!/usr/bin/env python3
-"""Provision the Azure infrastructure the rest of the pipeline runs on: the
-resource group, the storage account, the Azure AI Search service, the Foundry
-(Cognitive Services `AIServices`) account and project, and the two model
-deployments (embeddings + chat) the knowledge base needs. Safe to rerun --
-every step is a create-or-update.
-
-    az login
-    python scripts/setup/00_provision_infra.py --resource-group my-rg
-    python scripts/setup/00_provision_infra.py --resource-group my-rg --subscription-id <id>
-
-Every object name, region and SKU defaults to the umc-dev workshop setup and
-can be overridden via environment variable -- see `common.py`. The
-subscription defaults to whatever `az account show` reports (i.e. whatever
-`az login`/`az account set` last selected); pass `--subscription-id` or set
-`SUBSCRIPTION_ID` to target a different one. Authentication is Microsoft
-Entra only (`DefaultAzureCredential`); the identity running this needs Owner
-or Contributor on the target subscription (or at least on the resource
-group, if it already exists).
-
-This step is what turns an empty subscription into something `01_assign_roles.py`
-onward can build on -- it does not replace lab 1's "deploy a model in the
-portal" exercise, it just means the *rest* of the workshop (labs 2-7 and this
-pipeline) has a working project to point at from the start.
-"""
+"""Provision the resource group, storage account, search service, Foundry account/project, and model deployments (safe to rerun)."""
 
 from __future__ import annotations
 

@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""Download the three WHO guideline PDFs. Safe to rerun: existing valid PDFs are kept.
-
-    python scripts/setup/02_download_docs.py
-"""
+"""Download the three WHO guideline PDFs (safe to rerun: existing valid PDFs are kept)."""
 
 from __future__ import annotations
 

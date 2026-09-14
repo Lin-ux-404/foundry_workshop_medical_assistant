@@ -1,17 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the WHO medical knowledge base end to end.
-
-Checks:
-  1. Every source PDF produced chunks in the index.
-  2. Indexed chunks carry nonempty text and citation metadata.
-  3. A question about each document retrieves relevant content from the
-     Foundry IQ knowledge base, with usable source references.
-
-Authentication is Microsoft Entra only (DefaultAzureCredential); no keys are
-read or printed. Run `az login` first.
-
-    python scripts/setup/06_verify.py
-"""
+"""Verify the WHO medical knowledge base end to end (chunks, metadata, and retrieval)."""
 
 from __future__ import annotations
 

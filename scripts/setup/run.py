@@ -1,16 +1,5 @@
 #!/usr/bin/env python3
-"""End-to-end, rerunnable setup for the workshop's Azure environment and
-WHO medical knowledge base.
-
-    az login
-    python scripts/setup/run.py --resource-group my-rg
-    python scripts/setup/run.py --resource-group my-rg --subscription-id <id>
-    python scripts/setup/run.py --resource-group my-rg --reset-indexer
-    python scripts/setup/run.py --resource-group my-rg --skip-provision
-
-Every step is idempotent, and all auth is Microsoft Entra - no secrets are
-read, written, or printed.
-"""
+"""End-to-end, rerunnable setup for the workshop's Azure environment and WHO medical knowledge base."""
 
 from __future__ import annotations
 
