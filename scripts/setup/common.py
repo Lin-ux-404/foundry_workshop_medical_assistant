@@ -13,14 +13,33 @@ from __future__ import annotations
 import json
 import re
 import os
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from azure.identity import DefaultAzureCredential
+from loguru import logger
 
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parent.parent
+
+# Windows consoles often default to a legacy codepage (e.g. cp1252) that can't
+# encode characters PDFs and model answers commonly contain (>=, en dashes,
+# etc). Force UTF-8 on the stream loguru writes to so a log line never
+# crashes a report.
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
+# One logger configuration for every script in this folder: colorized,
+# timestamped (date + time), and leveled (INFO/SUCCESS/WARNING/ERROR) instead
+# of bare prints, so a long provisioning run is easy to scan or grep.
+logger.remove()
+logger.add(
+    sys.stderr,
+    colorize=True,
+    format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <level>{message}</level>",
+)
 
 
 def _require(name: str) -> str:
