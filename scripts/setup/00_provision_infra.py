@@ -216,20 +216,22 @@ def main() -> None:
     storage_client = StorageManagementClient(credential, settings.subscription_id)
     cognitive_client = CognitiveServicesManagementClient(credential, settings.subscription_id)
 
-    logger.info(f"subscription {settings.subscription_id}")
+    logger.info(f"Using subscription {settings.subscription_id}")
+    logger.info(f"Provisioning resource group {settings.resource_group}...")
     ensure_resource_group(resource_client, settings)
 
-    logger.info("storage account")
+    logger.info(f"Provisioning storage account {settings.storage_account}...")
     ensure_storage_account(storage_client, settings)
 
-    logger.info("search service")
+    logger.info(f"Provisioning search service {settings.search_service}...")
     ensure_search_service(resource_client, settings)
 
-    logger.info("foundry account + project")
+    logger.info(f"Provisioning Foundry account {settings.foundry_account}...")
     ensure_foundry_account(cognitive_client, settings)
+    logger.info(f"Provisioning Foundry project {settings.foundry_project}...")
     ensure_foundry_project(cognitive_client, settings)
 
-    logger.info("model deployments")
+    logger.info("Provisioning model deployments...")
     ensure_deployment(
         cognitive_client,
         settings,
