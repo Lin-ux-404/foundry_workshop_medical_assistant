@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import re
 import os
+import hashlib
 import shutil
 import subprocess
 import sys
@@ -79,6 +80,20 @@ def _subscription_id() -> str:
             "  export SUBSCRIPTION_ID=<value>     # bash"
         )
     return value
+
+
+def _resource_group_suffix(resource_group: str) -> str:
+    """A short, deterministic suffix derived from the resource group name.
+
+    Storage accounts, search services, and Foundry accounts all need
+    globally-unique names across *all* of Azure, not just this subscription,
+    so the umc-dev workshop's default names would collide if reused as-is in
+    a different resource group. Hashing the resource group name (instead of
+    e.g. the random module) means the same resource group always gets the
+    same suffix, so rerunning this pipeline is still idempotent - it targets
+    the same resources instead of creating new ones under a new name.
+    """
+    return hashlib.sha256(resource_group.encode()).hexdigest()[:6]
 
 
 @dataclass(frozen=True)
@@ -172,15 +187,27 @@ def load_settings() -> Settings:
     subscription_id = _subscription_id()
     resource_group = os.environ.get("RESOURCE_GROUP", "umc-dev")
 
-    storage_account = os.environ.get("STORAGE_ACCOUNT", "umcdevstorage")
-    search_service = os.environ.get("SEARCH_SERVICE", "umc-hackathon-devbox-fiq-search")
+    # Storage accounts, search services, and Foundry accounts need
+    # globally-unique names, so provisioning into any resource group other
+    # than the umc-dev workshop default appends a short, deterministic
+    # suffix to each default name to avoid colliding with the umc-dev
+    # resources (or anyone else's, in this subscription or otherwise).
+    suffix = "" if resource_group == "umc-dev" else f"-{_resource_group_suffix(resource_group)}"
+
+    storage_account = os.environ.get(
+        "STORAGE_ACCOUNT", f"umcdevstorage{suffix.replace('-', '')}"
+    )
+    search_service = os.environ.get("SEARCH_SERVICE", f"umc-hackathon-devbox-fiq-search{suffix}")
     search_endpoint = os.environ.get(
         "SEARCH_ENDPOINT", f"https://{search_service}.search.windows.net"
     )
-    foundry_account = os.environ.get("FOUNDRY_ACCOUNT", "umc-hackathon-devbox-resource")
+    foundry_account = os.environ.get("FOUNDRY_ACCOUNT", f"umc-hackathon-devbox-resource{suffix}")
     foundry_endpoint = os.environ.get(
         "FOUNDRY_ENDPOINT", f"https://{foundry_account}.cognitiveservices.azure.com"
     )
+    # The project name only needs to be unique within its own Foundry
+    # account, which the suffix above already makes unique, so it keeps its
+    # original name regardless of resource group.
     foundry_project = os.environ.get("FOUNDRY_PROJECT", "umc-hackathon-devbox")
 
     return Settings(

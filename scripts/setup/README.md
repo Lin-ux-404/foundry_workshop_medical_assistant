@@ -31,10 +31,16 @@ only want to (re)build the knowledge base on top of them.
 `run.py` runs the numbered scripts (`00_provision_infra.py` ...
 `06_verify.py`) in order; run any of them directly to redo just that step.
 Names, endpoints, regions, SKUs, and models default to the umc-dev workshop
-setup and can be overridden via env var — see `common.py`. The identity
-running `00_provision_infra.py` needs Owner or Contributor on the target
-subscription (or the resource group, if it already exists); every other
-script only needs the roles `01_assign_roles.py` grants.
+setup and can be overridden via env var — see `common.py`. The storage
+account, search service, and Foundry account need globally-unique names
+across all of Azure, so targeting any resource group other than `umc-dev`
+appends a short, deterministic suffix (derived from the resource group name)
+to those defaults to avoid colliding with the real `umc-dev` resources or
+anyone else's. If you still hit a name collision, override `STORAGE_ACCOUNT`,
+`SEARCH_SERVICE`, or `FOUNDRY_ACCOUNT` directly. The identity running
+`00_provision_infra.py` needs Owner or Contributor on the target subscription
+(or the resource group, if it already exists); every other script only needs
+the roles `01_assign_roles.py` grants.
 
 ## Licensing
 
