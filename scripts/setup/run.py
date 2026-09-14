@@ -19,6 +19,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from common import logger
+
 HERE = Path(__file__).resolve().parent
 
 
@@ -67,7 +69,7 @@ def main() -> None:
         steps = steps[1:]
 
     for i, (script, label, extra_args) in enumerate(steps, start=1):
-        print(f"\n=== {i}/{len(steps)} {label}")
+        logger.info(f"=== {i}/{len(steps)} {label}")
         run(script, *extra_args)
 
 

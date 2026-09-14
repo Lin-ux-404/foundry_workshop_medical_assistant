@@ -10,7 +10,7 @@ import sys
 
 import requests
 
-from common import documents_manifest, load_settings
+from common import documents_manifest, load_settings, logger
 
 RETRY_ATTEMPTS = 3
 # iris.who.int returns 403 for the default python-requests user agent.
@@ -31,8 +31,8 @@ def download(url: str, target) -> None:
             return
         except requests.RequestException as exc:  # network hiccup, blip, etc.
             last_error = exc
-            print(f"  retry {attempt}/{RETRY_ATTEMPTS} for {url}: {exc}")
-    raise SystemExit(f"  FAIL  could not download {url}: {last_error}")
+            logger.warning(f"retry {attempt}/{RETRY_ATTEMPTS} for {url}: {exc}")
+    raise SystemExit(f"could not download {url}: {last_error}")
 
 
 def main() -> None:
@@ -44,14 +44,14 @@ def main() -> None:
         target = settings.docs_dir / file_name
 
         if is_pdf(target):
-            print(f"  skip  {file_name} (already downloaded, {target.stat().st_size} bytes)")
+            logger.info(f"skip  {file_name} (already downloaded, {target.stat().st_size} bytes)")
             continue
 
-        print(f"  get   {file_name}")
+        logger.info(f"get   {file_name}")
         download(doc["pdf_url"], target)
         if not is_pdf(target):
-            sys.exit(f"  FAIL  {file_name} is not a PDF")
-        print(f"  ok    {file_name} ({target.stat().st_size} bytes)")
+            sys.exit(f"{file_name} is not a PDF")
+        logger.success(f"{file_name} ({target.stat().st_size} bytes)")
 
 
 if __name__ == "__main__":

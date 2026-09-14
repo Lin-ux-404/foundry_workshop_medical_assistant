@@ -15,7 +15,7 @@ from __future__ import annotations
 import argparse
 import time
 
-from common import HERE, Settings, load_settings, render_template, search_index_client, search_indexer_client
+from common import HERE, Settings, load_settings, logger, render_template, search_index_client, search_indexer_client
 
 OBJECTS_DIR = HERE / "search_objects"
 
@@ -27,7 +27,7 @@ def create_pipeline(settings: Settings) -> None:
     index_client = search_index_client(settings)
     indexer_client = search_indexer_client(settings)
 
-    print(f"search service {settings.search_service} (api-version {settings.search_api_version})")
+    logger.info(f"search service {settings.search_service} (api-version {settings.search_api_version})")
 
     datasource = render_template(OBJECTS_DIR / "datasource.json", settings)
     index = render_template(OBJECTS_DIR / "index.json", settings)
@@ -37,17 +37,17 @@ def create_pipeline(settings: Settings) -> None:
     knowledge_base = render_template(OBJECTS_DIR / "knowledge_base.json", settings)
 
     indexer_client.create_or_update_data_source_connection(datasource)
-    print(f"  ok  datasource {settings.data_source}")
+    logger.success(f"datasource {settings.data_source}")
     index_client.create_or_update_index(index)
-    print(f"  ok  index {settings.search_index}")
+    logger.success(f"index {settings.search_index}")
     indexer_client.create_or_update_skillset(skillset)
-    print(f"  ok  skillset {settings.skillset}")
+    logger.success(f"skillset {settings.skillset}")
     indexer_client.create_or_update_indexer(indexer)
-    print(f"  ok  indexer {settings.indexer}")
+    logger.success(f"indexer {settings.indexer}")
     index_client.create_or_update_knowledge_source(knowledge_source)
-    print(f"  ok  knowledge source {settings.knowledge_source}")
+    logger.success(f"knowledge source {settings.knowledge_source}")
     index_client.create_or_update_knowledge_base(knowledge_base)
-    print(f"  ok  knowledge base {settings.knowledge_base}")
+    logger.success(f"knowledge base {settings.knowledge_base}")
 
 
 def run_and_wait(settings: Settings, reset: bool) -> None:
@@ -58,12 +58,12 @@ def run_and_wait(settings: Settings, reset: bool) -> None:
     previous_start = last.start_time if last else None
 
     if last is not None and last.status == "inProgress":
-        print("  indexer already running, waiting for it")
+        logger.info("indexer already running, waiting for it")
     else:
         if reset:
             indexer_client.reset_indexer(settings.indexer)
         indexer_client.run_indexer(settings.indexer)
-        print("  run requested")
+        logger.info("run requested")
 
     # Wait for a run that finished *after* the one we observed before triggering,
     # otherwise a stale 'success' from the previous run ends the wait immediately.
@@ -76,11 +76,11 @@ def run_and_wait(settings: Settings, reset: bool) -> None:
             break
 
     if final is None:
-        print("  WARN no indexer run result observed")
+        logger.warning("no indexer run result observed")
         return
 
-    print(
-        f"  status={final.status.value} processed={final.item_count} "
+    logger.success(
+        f"status={final.status.value} processed={final.item_count} "
         f"failed={final.failed_item_count} warnings={len(final.warnings or [])}"
     )
 

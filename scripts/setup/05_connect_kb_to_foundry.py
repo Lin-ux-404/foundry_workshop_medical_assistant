@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from azure.mgmt.resource.resources import ResourceManagementClient
 
-from common import Settings, get_credential, load_settings
+from common import Settings, get_credential, load_settings, logger
 
 CONNECTION_API_VERSION = "2025-10-01-preview"
 
@@ -50,7 +50,7 @@ def main() -> None:
         connection_id, body, api_version=CONNECTION_API_VERSION
     )
     poller.result()
-    print(f"  ok  connection {settings.kb_connection_name} -> {settings.knowledge_base}")
+    logger.success(f"connection {settings.kb_connection_name} -> {settings.knowledge_base}")
 
 
 if __name__ == "__main__":

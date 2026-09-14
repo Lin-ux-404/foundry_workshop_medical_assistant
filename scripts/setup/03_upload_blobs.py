@@ -14,7 +14,7 @@ import sys
 from azure.core.exceptions import ResourceExistsError
 from azure.storage.blob import BlobServiceClient, ContentSettings
 
-from common import documents_manifest, get_credential, load_settings
+from common import documents_manifest, get_credential, load_settings, logger
 
 METADATA_FIELDS = [
     "document_title",
@@ -36,7 +36,7 @@ def main() -> None:
     service = BlobServiceClient(account_url, credential=get_credential())
     container = service.get_container_client(settings.blob_container)
 
-    print(f"container {settings.blob_container} in {settings.storage_account}")
+    logger.info(f"container {settings.blob_container} in {settings.storage_account}")
     try:
         container.create_container()
     except ResourceExistsError:
@@ -46,7 +46,7 @@ def main() -> None:
         file_name = doc["file"]
         path = settings.docs_dir / file_name
         if not path.exists() or path.stat().st_size == 0:
-            sys.exit(f"  FAIL missing {path} - run 02_download_docs.py")
+            sys.exit(f"missing {path} - run 02_download_docs.py")
 
         metadata = {field: str(doc[field]) for field in METADATA_FIELDS}
         with path.open("rb") as fh:
@@ -57,7 +57,7 @@ def main() -> None:
                 metadata=metadata,
                 content_settings=ContentSettings(content_type="application/pdf"),
             )
-        print(f"  ok    {file_name}")
+        logger.success(file_name)
 
 
 if __name__ == "__main__":

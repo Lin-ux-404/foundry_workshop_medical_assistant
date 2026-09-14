@@ -43,7 +43,7 @@ from azure.mgmt.storage.models import Kind as StorageKind
 from azure.mgmt.storage.models import Sku as StorageSku
 from azure.mgmt.storage.models import StorageAccountCreateParameters
 
-from common import Settings, get_credential, load_settings
+from common import Settings, get_credential, load_settings, logger
 
 # The "serverless" search SKU and the `knowledgeRetrieval` surface (Foundry IQ /
 # knowledge bases) are preview-only and not yet in the stable azure-mgmt-search
@@ -57,7 +57,7 @@ def ensure_resource_group(resource_client: ResourceManagementClient, settings: S
     resource_client.resource_groups.create_or_update(
         settings.resource_group, {"location": settings.foundry_location}
     )
-    print(f"  ok  resource group {settings.resource_group} ({settings.foundry_location})")
+    logger.success(f"resource group {settings.resource_group} ({settings.foundry_location})")
 
 
 def ensure_storage_account(storage_client: StorageManagementClient, settings: Settings) -> None:
@@ -85,7 +85,7 @@ def ensure_storage_account(storage_client: StorageManagementClient, settings: Se
         ),
     )
     poller.result()
-    print(f"  ok  storage account {settings.storage_account} ({settings.data_location})")
+    logger.success(f"storage account {settings.storage_account} ({settings.data_location})")
 
 
 def ensure_search_service(resource_client: ResourceManagementClient, settings: Settings) -> None:
@@ -104,8 +104,8 @@ def ensure_search_service(resource_client: ResourceManagementClient, settings: S
         settings.search_service_resource_id, body, api_version=SEARCH_API_VERSION
     )
     poller.result()
-    print(
-        f"  ok  search service {settings.search_service} "
+    logger.success(
+        f"search service {settings.search_service} "
         f"({settings.data_location}, sku={settings.search_sku})"
     )
 
@@ -128,7 +128,7 @@ def ensure_foundry_account(cognitive_client: CognitiveServicesManagementClient, 
         ),
     )
     poller.result()
-    print(f"  ok  foundry account {settings.foundry_account} ({settings.foundry_location})")
+    logger.success(f"foundry account {settings.foundry_account} ({settings.foundry_location})")
 
 
 def ensure_foundry_project(cognitive_client: CognitiveServicesManagementClient, settings: Settings) -> None:
@@ -143,7 +143,7 @@ def ensure_foundry_project(cognitive_client: CognitiveServicesManagementClient, 
         ),
     )
     poller.result()
-    print(f"  ok  foundry project {settings.foundry_project}")
+    logger.success(f"foundry project {settings.foundry_project}")
 
 
 def resolve_model_version(
@@ -184,7 +184,7 @@ def ensure_deployment(
         ),
     )
     poller.result()
-    print(f"  ok  deployment {name} ({model_name} {version}, {sku_name} x{capacity})")
+    logger.success(f"deployment {name} ({model_name} {version}, {sku_name} x{capacity})")
 
 
 def main() -> None:
@@ -205,20 +205,20 @@ def main() -> None:
     storage_client = StorageManagementClient(credential, settings.subscription_id)
     cognitive_client = CognitiveServicesManagementClient(credential, settings.subscription_id)
 
-    print(f"subscription {settings.subscription_id}")
+    logger.info(f"subscription {settings.subscription_id}")
     ensure_resource_group(resource_client, settings)
 
-    print("\nstorage account")
+    logger.info("storage account")
     ensure_storage_account(storage_client, settings)
 
-    print("\nsearch service")
+    logger.info("search service")
     ensure_search_service(resource_client, settings)
 
-    print("\nfoundry account + project")
+    logger.info("foundry account + project")
     ensure_foundry_account(cognitive_client, settings)
     ensure_foundry_project(cognitive_client, settings)
 
-    print("\nmodel deployments")
+    logger.info("model deployments")
     ensure_deployment(
         cognitive_client,
         settings,

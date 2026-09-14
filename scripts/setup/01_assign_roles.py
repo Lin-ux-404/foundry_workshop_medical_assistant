@@ -17,7 +17,7 @@ from azure.mgmt.authorization import AuthorizationManagementClient
 from azure.mgmt.resource.resources import ResourceManagementClient
 from azure.mgmt.search import SearchManagementClient
 
-from common import Settings, get_credential, load_settings
+from common import Settings, get_credential, load_settings, logger
 
 # Stable, tenant-independent GUIDs for Azure built-in roles (identical in
 # every subscription -- these are not secrets).
@@ -66,7 +66,7 @@ def assign(
         scope, filter=f"principalId eq '{principal_id}'"
     )
     if any(a.role_definition_id.lower() == role_definition_id.lower() for a in existing):
-        print(f"  have  {label}")
+        logger.info(f"have  {label}")
         return
 
     auth_client.role_assignments.create(
@@ -80,7 +80,7 @@ def assign(
             }
         },
     )
-    print(f"  added {label}")
+    logger.success(f"added {label}")
 
 
 def main() -> None:
