@@ -6,7 +6,7 @@ over MCP. Idempotent: a PUT with the same body is a no-op.
 
 The connection uses ProjectManagedIdentity, so no secret is stored anywhere -
 the project's own identity authenticates to Azure AI Search, which is why
-00_assign_roles.py grants that identity Search Index Data Reader.
+01_assign_roles.py grants that identity Search Index Data Reader.
 
 There is no dedicated management SDK for Foundry project connections yet, so
 this uses the generic ARM resource client (`azure-mgmt-resource`) instead of a

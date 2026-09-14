@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Download the three WHO guideline PDFs. Safe to rerun: existing valid PDFs are kept.
 
-    python scripts/medical_kb/01_download_docs.py
+    python scripts/medical_kb/02_download_docs.py
 """
 
 from __future__ import annotations

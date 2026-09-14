@@ -2,7 +2,7 @@
 """Create or update the search pipeline: data source, index, skillset, indexer,
 knowledge source, and Foundry IQ knowledge base. Safe to rerun.
 
-    python scripts/medical_kb/03_create_search_pipeline.py [--skip-run] [--reset]
+    python scripts/medical_kb/04_create_search_pipeline.py [--skip-run] [--reset]
 
 After the objects are created, this triggers an indexer run and waits
 (bounded) for it to finish. The preview `azure-search-documents` SDK does not

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Create the blob container and upload the WHO PDFs with citation metadata.
 
-    python scripts/medical_kb/02_upload_blobs.py
+    python scripts/medical_kb/03_upload_blobs.py
 
 Uses Microsoft Entra auth only (``DefaultAzureCredential``); no account keys
 are read or printed.
@@ -46,7 +46,7 @@ def main() -> None:
         file_name = doc["file"]
         path = settings.docs_dir / file_name
         if not path.exists() or path.stat().st_size == 0:
-            sys.exit(f"  FAIL missing {path} - run 01_download_docs.py")
+            sys.exit(f"  FAIL missing {path} - run 02_download_docs.py")
 
         metadata = {field: str(doc[field]) for field in METADATA_FIELDS}
         with path.open("rb") as fh:
