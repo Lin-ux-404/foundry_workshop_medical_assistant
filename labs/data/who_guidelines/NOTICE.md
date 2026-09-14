@@ -1,6 +1,6 @@
 # Third-party content notice - WHO guidelines
 
-The three PDFs downloaded into this directory by `scripts/medical_kb/01_download_docs.py`
+The three PDFs downloaded into this directory by `scripts/medical_kb/02_download_docs.py`
 are publications of the **World Health Organization (WHO)**. They are not authored by the
 maintainers of this repository, and they are not covered by this repository's own licence.
 
