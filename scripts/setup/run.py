@@ -49,37 +49,26 @@ def main() -> None:
     # about --resource-group.
     os.environ["RESOURCE_GROUP"] = args.resource_group
 
-    steps = 6 if args.skip_provision else 7
-    step = 0
+    # (script, label, extra args). Skipping provisioning just drops the first entry.
+    steps = [
+        ("00_provision_infra.py", "provision infrastructure", []),
+        ("01_assign_roles.py", "role assignments", []),
+        ("02_download_docs.py", "download WHO PDFs", []),
+        ("03_upload_blobs.py", "upload to blob storage", []),
+        (
+            "04_create_search_pipeline.py",
+            "create search pipeline + run ingestion",
+            ["--reset"] if args.reset_indexer else [],
+        ),
+        ("05_connect_kb_to_foundry.py", "connect the knowledge base to Foundry", []),
+        ("06_verify.py", "verify", []),
+    ]
+    if args.skip_provision:
+        steps = steps[1:]
 
-    if not args.skip_provision:
-        step += 1
-        print(f"\n=== {step}/{steps} provision infrastructure")
-        run("00_provision_infra.py")
-
-    step += 1
-    print(f"\n=== {step}/{steps} role assignments")
-    run("01_assign_roles.py")
-
-    step += 1
-    print(f"\n=== {step}/{steps} download WHO PDFs")
-    run("02_download_docs.py")
-
-    step += 1
-    print(f"\n=== {step}/{steps} upload to blob storage")
-    run("03_upload_blobs.py")
-
-    step += 1
-    print(f"\n=== {step}/{steps} create search pipeline + run ingestion")
-    run("04_create_search_pipeline.py", *(["--reset"] if args.reset_indexer else []))
-
-    step += 1
-    print(f"\n=== {step}/{steps} connect the knowledge base to Foundry")
-    run("05_connect_kb_to_foundry.py")
-
-    step += 1
-    print(f"\n=== {step}/{steps} verify")
-    run("06_verify.py")
+    for i, (script, label, extra_args) in enumerate(steps, start=1):
+        print(f"\n=== {i}/{len(steps)} {label}")
+        run(script, *extra_args)
 
 
 if __name__ == "__main__":
