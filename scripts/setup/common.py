@@ -9,10 +9,12 @@ import hashlib
 import shutil
 import subprocess
 import sys
+import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable, TypeVar
 
+from azure.core.exceptions import HttpResponseError
 from azure.identity import DefaultAzureCredential
 from loguru import logger
 
@@ -249,6 +251,37 @@ def get_credential() -> DefaultAzureCredential:
     if _credential is None:
         _credential = DefaultAzureCredential()
     return _credential
+
+
+_T = TypeVar("_T")
+
+
+def retry_on_transient_error(
+    func: Callable[[], _T],
+    *,
+    attempts: int = 6,
+    initial_delay: float = 10.0,
+    backoff: float = 1.5,
+) -> _T:
+    """Retry a call that can fail while a just-granted RBAC role assignment is
+    still propagating through Microsoft Entra (this can take a couple of
+    minutes). Only retries ``HttpResponseError`` -- anything else is a real
+    problem and should surface immediately.
+    """
+    delay = initial_delay
+    for attempt in range(1, attempts + 1):
+        try:
+            return func()
+        except HttpResponseError as error:
+            if attempt == attempts:
+                raise
+            logger.warning(
+                f"attempt {attempt}/{attempts} failed ({error.message or error}); "
+                f"retrying in {delay:.0f}s in case an RBAC role assignment is still propagating"
+            )
+            time.sleep(delay)
+            delay *= backoff
+    raise AssertionError("unreachable")  # pragma: no cover
 
 
 def search_index_client(settings: Settings):

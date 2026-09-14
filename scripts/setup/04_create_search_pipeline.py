@@ -6,7 +6,9 @@ from __future__ import annotations
 import argparse
 import time
 
-from common import HERE, Settings, load_settings, logger, render_template, search_index_client, search_indexer_client
+from azure.core.exceptions import ResourceNotFoundError
+
+from common import HERE, Settings, load_settings, logger, render_template, retry_on_transient_error, search_index_client, search_indexer_client
 
 OBJECTS_DIR = HERE / "search_objects"
 
@@ -29,9 +31,12 @@ def create_pipeline(settings: Settings) -> None:
 
     indexer_client.create_or_update_data_source_connection(datasource)
     logger.success(f"datasource {settings.data_source}")
-    index_client.create_or_update_index(index)
+    # The index's vectorizer and the skillset's embedding skill both call out
+    # to the Foundry account, so both can transiently fail here if
+    # 01_assign_roles.py's Cognitive Services User grant hasn't propagated yet.
+    retry_on_transient_error(lambda: index_client.create_or_update_index(index))
     logger.success(f"index {settings.search_index}")
-    indexer_client.create_or_update_skillset(skillset)
+    retry_on_transient_error(lambda: indexer_client.create_or_update_skillset(skillset))
     logger.success(f"skillset {settings.skillset}")
     indexer_client.create_or_update_indexer(indexer)
     logger.success(f"indexer {settings.indexer}")
@@ -41,23 +46,33 @@ def create_pipeline(settings: Settings) -> None:
     logger.success(f"knowledge base {settings.knowledge_base}")
 
 
-def run_and_wait(settings: Settings, reset: bool) -> None:
+def run_and_wait(settings: Settings, previous_start, reset: bool) -> None:
     indexer_client = search_indexer_client(settings)
 
-    status = indexer_client.get_indexer_status(settings.indexer)
-    last = status.last_result
-    previous_start = last.start_time if last else None
-
-    if last is not None and last.status == "inProgress":
-        logger.info("indexer already running, waiting for it")
-    else:
-        if reset:
-            indexer_client.reset_indexer(settings.indexer)
+    if reset:
+        # create_or_update_indexer() may have already auto-triggered its own
+        # run; let that settle first so reset_indexer() doesn't fight over
+        # indexer state with a run still in progress.
+        for _ in range(RUN_POLL_MAX_ATTEMPTS):
+            if indexer_client.get_indexer_status(settings.indexer).status != "running":
+                break
+            time.sleep(RUN_POLL_INTERVAL_SECONDS)
+        # A plain indexer run only reprocesses blobs that changed since the
+        # last run; --reset-indexer needs a genuine full reprocess, so clear
+        # the incremental change-tracking state and trigger a fresh run.
+        indexer_client.reset_indexer(settings.indexer)
         indexer_client.run_indexer(settings.indexer)
-        logger.info("run requested")
+        logger.info("full re-ingest requested")
+    else:
+        # create_or_update_indexer() in create_pipeline() already
+        # auto-triggers a run for any new or changed indexer definition, so
+        # there's nothing to trigger here -- calling run_indexer() again
+        # would just queue a redundant second run right behind it.
+        logger.info("waiting for the run the indexer update already triggered")
 
-    # Wait for a run that finished *after* the one we observed before triggering,
-    # otherwise a stale 'success' from the previous run ends the wait immediately.
+    # Wait for a run that finished *after* the one we observed before
+    # create_pipeline() touched the indexer, otherwise a stale 'success' from
+    # an earlier run ends the wait immediately.
     final = None
     for _ in range(RUN_POLL_MAX_ATTEMPTS):
         time.sleep(RUN_POLL_INTERVAL_SECONDS)
@@ -87,9 +102,22 @@ def main() -> None:
     args = parser.parse_args()
 
     settings = load_settings()
+
+    # Capture the run pointer *before* create_pipeline() touches the indexer:
+    # creating or updating an indexer auto-triggers a run, so this baseline
+    # is what lets run_and_wait() recognize *that* run finishing instead of
+    # an older one still sitting in last_result.
+    previous_start = None
+    if not args.skip_run:
+        try:
+            status = search_indexer_client(settings).get_indexer_status(settings.indexer)
+            previous_start = status.last_result.start_time if status.last_result else None
+        except ResourceNotFoundError:
+            pass  # indexer doesn't exist yet -- nothing to establish a baseline from
+
     create_pipeline(settings)
     if not args.skip_run:
-        run_and_wait(settings, args.reset)
+        run_and_wait(settings, previous_start, args.reset)
 
 
 if __name__ == "__main__":
