@@ -13,6 +13,8 @@ from __future__ import annotations
 import json
 import re
 import os
+import shutil
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -42,13 +44,39 @@ logger.add(
 )
 
 
-def _require(name: str) -> str:
-    value = os.environ.get(name)
+def _az_cli_subscription_id() -> str | None:
+    """The subscription `az login`/`az account set` last selected, i.e. what
+    `az account show` reports. Falling back to this means most people never
+    need to set SUBSCRIPTION_ID by hand - it's only needed when the Azure CLI
+    isn't installed, or you want to target a different subscription than the
+    CLI's current default.
+    """
+    az_cmd = shutil.which("az")
+    if not az_cmd:
+        return None
+    try:
+        result = subprocess.run(
+            [az_cmd, "account", "show", "--query", "id", "-o", "tsv"],
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=True,
+        )
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError):
+        return None
+    subscription_id = result.stdout.strip()
+    return subscription_id or None
+
+
+def _subscription_id() -> str:
+    value = os.environ.get("SUBSCRIPTION_ID") or _az_cli_subscription_id()
     if not value:
         raise SystemExit(
-            f"{name} is required and has no default. Set it explicitly, e.g.\n"
-            f'  $env:{name} = "<value>"   # PowerShell\n'
-            f"  export {name}=<value>     # bash"
+            "Could not determine SUBSCRIPTION_ID. Either run `az login` (so "
+            "`az account show` has a subscription to report) or set it "
+            "explicitly, e.g.\n"
+            '  $env:SUBSCRIPTION_ID = "<value>"   # PowerShell\n'
+            "  export SUBSCRIPTION_ID=<value>     # bash"
         )
     return value
 
@@ -135,12 +163,13 @@ class Settings:
 def load_settings() -> Settings:
     """Read pipeline configuration from the environment.
 
-    ``SUBSCRIPTION_ID`` has no built-in default and must be set explicitly
-    (env var), so a real subscription ID never ships baked into source.
-    Every other value falls back to the umc-dev workshop defaults and can be
-    overridden the same way.
+    ``SUBSCRIPTION_ID`` defaults to whatever ``az account show`` reports (the
+    subscription ``az login``/``az account set`` last selected), so it only
+    needs to be set explicitly (env var) to target a different subscription
+    or when the Azure CLI isn't installed. Every other value falls back to
+    the umc-dev workshop defaults and can be overridden the same way.
     """
-    subscription_id = _require("SUBSCRIPTION_ID")
+    subscription_id = _subscription_id()
     resource_group = os.environ.get("RESOURCE_GROUP", "umc-dev")
 
     storage_account = os.environ.get("STORAGE_ACCOUNT", "umcdevstorage")
