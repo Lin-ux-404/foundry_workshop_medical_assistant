@@ -16,4 +16,9 @@ azure-mgmt-authorization
 azure-mgmt-resource
 azure-mgmt-search
 
+# 00_provision_infra.py: creates the resource group, storage account, search
+# service, and Foundry account/project/deployments.
+azure-mgmt-storage
+azure-mgmt-cognitiveservices
+
 requests
