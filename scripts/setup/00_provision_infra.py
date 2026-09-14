@@ -6,14 +6,17 @@ deployments (embeddings + chat) the knowledge base needs. Safe to rerun --
 every step is a create-or-update.
 
     az login
-    export SUBSCRIPTION_ID=<your-subscription-id>
     python scripts/setup/00_provision_infra.py --resource-group my-rg
+    python scripts/setup/00_provision_infra.py --resource-group my-rg --subscription-id <id>
 
 Every object name, region and SKU defaults to the umc-dev workshop setup and
-can be overridden via environment variable -- see `common.py`. Authentication
-is Microsoft Entra only (`DefaultAzureCredential`); the identity running this
-needs Owner or Contributor on the target subscription (or at least on the
-resource group, if it already exists).
+can be overridden via environment variable -- see `common.py`. The
+subscription defaults to whatever `az account show` reports (i.e. whatever
+`az login`/`az account set` last selected); pass `--subscription-id` or set
+`SUBSCRIPTION_ID` to target a different one. Authentication is Microsoft
+Entra only (`DefaultAzureCredential`); the identity running this needs Owner
+or Contributor on the target subscription (or at least on the resource
+group, if it already exists).
 
 This step is what turns an empty subscription into something `01_assign_roles.py`
 onward can build on -- it does not replace lab 1's "deploy a model in the
@@ -194,9 +197,17 @@ def main() -> None:
         default=None,
         help="Override RESOURCE_GROUP for this run (default: env var, then 'umc-dev').",
     )
+    parser.add_argument(
+        "--subscription-id",
+        default=None,
+        help="Override SUBSCRIPTION_ID for this run (default: env var, then "
+        "`az account show`'s current subscription).",
+    )
     args = parser.parse_args()
     if args.resource_group:
         os.environ["RESOURCE_GROUP"] = args.resource_group
+    if args.subscription_id:
+        os.environ["SUBSCRIPTION_ID"] = args.subscription_id
 
     settings = load_settings()
     credential = get_credential()

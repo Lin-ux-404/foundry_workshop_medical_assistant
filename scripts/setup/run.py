@@ -4,6 +4,7 @@ WHO medical knowledge base.
 
     az login
     python scripts/setup/run.py --resource-group my-rg
+    python scripts/setup/run.py --resource-group my-rg --subscription-id <id>
     python scripts/setup/run.py --resource-group my-rg --reset-indexer
     python scripts/setup/run.py --resource-group my-rg --skip-provision
 
@@ -36,6 +37,12 @@ def main() -> None:
         help="Resource group to deploy into (default: %(default)s).",
     )
     parser.add_argument(
+        "--subscription-id",
+        default=None,
+        help="Azure subscription to use (default: SUBSCRIPTION_ID env var, "
+        "then `az account show`'s current subscription).",
+    )
+    parser.add_argument(
         "--reset-indexer", action="store_true", help="Force a full re-ingest of all documents."
     )
     parser.add_argument(
@@ -46,10 +53,12 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    # Every step reads its config from common.py, which reads this env var -
-    # setting it once here means none of the numbered scripts need to know
-    # about --resource-group.
+    # Every step reads its config from common.py, which reads these env vars -
+    # setting them once here means none of the numbered scripts need to know
+    # about --resource-group/--subscription-id.
     os.environ["RESOURCE_GROUP"] = args.resource_group
+    if args.subscription_id:
+        os.environ["SUBSCRIPTION_ID"] = args.subscription_id
 
     # (script, label, extra args). Skipping provisioning just drops the first entry.
     steps = [

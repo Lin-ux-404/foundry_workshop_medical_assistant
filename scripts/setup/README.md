@@ -11,11 +11,14 @@ with Microsoft Entra (`az login`) — no keys are stored, read, or printed.
 
 ```bash
 az login
-export SUBSCRIPTION_ID=<your-subscription-id>
 pip install -r scripts/setup/requirements.txt
 
 python scripts/setup/run.py --resource-group <your-resource-group>
 ```
+
+This uses whatever subscription `az account show` reports (i.e. whatever
+`az login`/`az account set` last selected). Pass `--subscription-id <id>` or
+set `SUBSCRIPTION_ID` if you want to target a different one.
 
 This provisions everything from an empty subscription: the resource group,
 storage account, Azure AI Search service, the Foundry account and project,
