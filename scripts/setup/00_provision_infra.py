@@ -29,6 +29,7 @@ from __future__ import annotations
 import argparse
 import os
 
+from azure.core.exceptions import HttpResponseError
 from azure.mgmt.cognitiveservices import CognitiveServicesManagementClient
 from azure.mgmt.cognitiveservices.models import (
     Account,
@@ -186,7 +187,20 @@ def ensure_deployment(
             ),
         ),
     )
-    poller.result()
+    try:
+        poller.result()
+    except HttpResponseError as error:
+        if error.error is not None and error.error.code == "InsufficientQuota":
+            raise SystemExit(
+                f"Not enough '{model_name}' quota in {settings.foundry_location!r} for a "
+                f"{capacity}k TPM deployment ({error.error.message}). This quota is shared "
+                "across every deployment of that model in the region for this subscription, "
+                "so the umc-dev workshop's own deployment eats into what's left for new ones. "
+                "Either lower EMBEDDING_CAPACITY/CHAT_CAPACITY to what's available, pick a "
+                "different FOUNDRY_LOCATION/DATA_LOCATION with spare quota, or request a quota "
+                "increase for this subscription."
+            ) from error
+        raise
     logger.success(f"deployment {name} ({model_name} {version}, {sku_name} x{capacity})")
 
 
