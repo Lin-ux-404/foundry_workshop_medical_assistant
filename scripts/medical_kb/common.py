@@ -48,11 +48,23 @@ class Settings:
     foundry_endpoint: str
     foundry_project: str
 
+    # Provisioning-only settings (00_provision_infra.py). Everything below is
+    # unused once the resources already exist, so these are safe to ignore for
+    # the rest of the pipeline.
+    data_location: str
+    foundry_location: str
+    search_sku: str
+    semantic_search: str
+
     embedding_deployment: str
     embedding_model: str
     embedding_dimensions: int
+    embedding_sku: str
+    embedding_capacity: int
     chat_deployment: str
     chat_model: str
+    chat_sku: str
+    chat_capacity: int
 
     blob_container: str
     data_source: str
@@ -131,11 +143,19 @@ def load_settings() -> Settings:
         foundry_account=foundry_account,
         foundry_endpoint=foundry_endpoint,
         foundry_project=foundry_project,
+        data_location=os.environ.get("DATA_LOCATION", "switzerlandnorth"),
+        foundry_location=os.environ.get("FOUNDRY_LOCATION", "swedencentral"),
+        search_sku=os.environ.get("SEARCH_SKU", "serverless"),
+        semantic_search=os.environ.get("SEMANTIC_SEARCH", "standard"),
         embedding_deployment=os.environ.get("EMBEDDING_DEPLOYMENT", "text-embedding-3-large"),
         embedding_model=os.environ.get("EMBEDDING_MODEL", "text-embedding-3-large"),
         embedding_dimensions=int(os.environ.get("EMBEDDING_DIMENSIONS", "3072")),
+        embedding_sku=os.environ.get("EMBEDDING_SKU", "Standard"),
+        embedding_capacity=int(os.environ.get("EMBEDDING_CAPACITY", "120")),
         chat_deployment=os.environ.get("CHAT_DEPLOYMENT", "gpt-5.6-luna"),
         chat_model=os.environ.get("CHAT_MODEL", "gpt-5.6-luna"),
+        chat_sku=os.environ.get("CHAT_SKU", "GlobalStandard"),
+        chat_capacity=int(os.environ.get("CHAT_CAPACITY", "500")),
         blob_container=os.environ.get("BLOB_CONTAINER", "who-guidelines"),
         data_source=os.environ.get("DATA_SOURCE", "who-guidelines-datasource"),
         search_index=os.environ.get("SEARCH_INDEX", "who-guidelines-index"),
