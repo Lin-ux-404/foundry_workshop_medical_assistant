@@ -48,7 +48,7 @@ Azure environment and builds that knowledge base, and is safe to rerun — see
 ## Prerequisites
 
 - Python 3.11+ and Node 18+
-- An Azure AI Foundry project with a deployed chat model (the labs assume `gpt-5.6-luna`)
+- An Azure AI Foundry project with a deployed chat model (the labs assume `gpt-5.4-mini`)
 - Azure CLI: run `az login` (the backend uses `DefaultAzureCredential`, no API keys)
 
 ## Run the backend
