@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     # --- Azure AI Foundry ---
     # e.g. https://<resource>.services.ai.azure.com/api/projects/<project>
     azure_ai_project_endpoint: str = ""
-    azure_ai_model_deployment_name: str = "gpt-5.6-luna"
+    azure_ai_model_deployment_name: str = "gpt-5.4-mini"
 
     # --- API ---
     # Comma-separated list of allowed frontend origins.

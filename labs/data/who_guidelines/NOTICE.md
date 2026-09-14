@@ -1,6 +1,6 @@
 # Third-party content notice - WHO guidelines
 
-The three PDFs downloaded into this directory by `scripts/medical_kb/01_download_docs.sh`
+The three PDFs downloaded into this directory by `scripts/setup/02_download_docs.py`
 are publications of the **World Health Organization (WHO)**. They are not authored by the
 maintainers of this repository, and they are not covered by this repository's own licence.
 
@@ -28,7 +28,7 @@ Reproduce the WHO suggested citation whenever content from these documents is su
 | Hypertension | Guideline for the pharmacological treatment of hypertension in adults. Geneva: World Health Organization; 2021. Licence: CC BY-NC-SA 3.0 IGO. |
 | IPC core components | Guidelines on core components of infection prevention and control programmes at the national and acute health care facility level. Geneva: World Health Organization; 2016. Licence: CC BY-NC-SA 3.0 IGO. |
 
-Each citation is also stored in `scripts/medical_kb/documents.json`, written to the blob
+Each citation is also stored in `scripts/setup/documents.json`, written to the blob
 metadata at upload time, and projected into the search index as a retrievable `citation`
 field alongside `license` and `license_url`, so answers generated from the knowledge base
 can carry the required attribution.

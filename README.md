@@ -19,7 +19,7 @@ labs/
   day_1/ day_2/ day_3/   Foundry notebooks, one per topic (see below).
   data/                  Datasets used by the labs (WHO guidelines, hospital IPC data).
 scripts/
-  medical_kb/        Provisions the Azure AI Search knowledge base the labs query.
+  setup/             Provisions the Azure environment (Search, Storage, Foundry) and the knowledge base the labs query.
 ```
 
 ## Labs
@@ -41,14 +41,14 @@ so run Lab 3 before Lab 4.
 
 Labs 3, 4 and 6 read from a knowledge base built from three published WHO
 clinical guidelines; Lab 6 also reads synthetic hospital data from
-`labs/data/hospital/ipc_self_assessment.json`. `scripts/medical_kb/` builds
-that knowledge base and is safe to rerun - see
-[`scripts/medical_kb/README.md`](scripts/medical_kb/README.md).
+`labs/data/hospital/ipc_self_assessment.json`. `scripts/setup/` provisions the
+Azure environment and builds that knowledge base, and is safe to rerun — see
+[`scripts/setup/README.md`](scripts/setup/README.md).
 
 ## Prerequisites
 
 - Python 3.11+ and Node 18+
-- An Azure AI Foundry project with a deployed chat model (the labs assume `gpt-5.6-luna`)
+- An Azure AI Foundry project with a deployed chat model (the labs assume `gpt-5.4-mini`)
 - Azure CLI: run `az login` (the backend uses `DefaultAzureCredential`, no API keys)
 
 ## Run the backend
