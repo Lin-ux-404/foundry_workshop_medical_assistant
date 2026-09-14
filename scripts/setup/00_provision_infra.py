@@ -6,7 +6,7 @@ from __future__ import annotations
 import argparse
 import os
 
-from azure.core.exceptions import HttpResponseError
+from azure.core.exceptions import HttpResponseError, ResourceExistsError
 from azure.mgmt.cognitiveservices import CognitiveServicesManagementClient
 from azure.mgmt.cognitiveservices.models import (
     Account,
@@ -92,23 +92,37 @@ def ensure_search_service(resource_client: ResourceManagementClient, settings: S
 
 
 def ensure_foundry_account(cognitive_client: CognitiveServicesManagementClient, settings: Settings) -> None:
-    poller = cognitive_client.accounts.begin_create(
-        settings.resource_group,
-        settings.foundry_account,
-        Account(
-            location=settings.foundry_location,
-            kind="AIServices",
-            sku=CognitiveSku(name="S0"),
-            identity=CognitiveIdentity(type="SystemAssigned"),
-            properties=AccountProperties(
-                custom_sub_domain_name=settings.foundry_account,
-                public_network_access="Enabled",
-                disable_local_auth=True,
-                allow_project_management=True,
-            ),
+    account = Account(
+        location=settings.foundry_location,
+        kind="AIServices",
+        sku=CognitiveSku(name="S0"),
+        identity=CognitiveIdentity(type="SystemAssigned"),
+        properties=AccountProperties(
+            custom_sub_domain_name=settings.foundry_account,
+            public_network_access="Enabled",
+            disable_local_auth=True,
+            allow_project_management=True,
         ),
     )
-    poller.result()
+    try:
+        cognitive_client.accounts.begin_create(
+            settings.resource_group, settings.foundry_account, account
+        ).result()
+    except ResourceExistsError as error:
+        if error.error is None or error.error.code != "FlagMustBeSetForRestore":
+            raise
+        # A previous run created this same account (its name is deterministic
+        # per resource group) and it was later deleted; Cognitive Services
+        # soft-deletes accounts for a retention window instead of removing
+        # them immediately. Since nothing depends on the old one, purge it
+        # and create fresh rather than restore it.
+        logger.warning(f"purging soft-deleted foundry account {settings.foundry_account}...")
+        cognitive_client.deleted_accounts.begin_purge(
+            settings.foundry_location, settings.resource_group, settings.foundry_account
+        ).result()
+        cognitive_client.accounts.begin_create(
+            settings.resource_group, settings.foundry_account, account
+        ).result()
     logger.success(f"foundry account {settings.foundry_account} ({settings.foundry_location})")
 
 
@@ -153,18 +167,18 @@ def ensure_deployment(
     capacity: int,
 ) -> None:
     version = resolve_model_version(cognitive_client, settings.foundry_location, model_name)
-    poller = cognitive_client.deployments.begin_create_or_update(
-        settings.resource_group,
-        settings.foundry_account,
-        name,
-        Deployment(
-            sku=CognitiveSku(name=sku_name, capacity=capacity),
-            properties=DeploymentProperties(
-                model=DeploymentModel(format="OpenAI", name=model_name, version=version),
-            ),
-        ),
-    )
     try:
+        poller = cognitive_client.deployments.begin_create_or_update(
+            settings.resource_group,
+            settings.foundry_account,
+            name,
+            Deployment(
+                sku=CognitiveSku(name=sku_name, capacity=capacity),
+                properties=DeploymentProperties(
+                    model=DeploymentModel(format="OpenAI", name=model_name, version=version),
+                ),
+            ),
+        )
         poller.result()
     except HttpResponseError as error:
         if error.error is not None and error.error.code == "InsufficientQuota":
