@@ -12,7 +12,7 @@ an agent on **Microsoft Foundry** via the **Microsoft Agent Framework**.
 ```text
 app/
   backend/           FastAPI app (main.py, config.py, clients/, agents/, routers/, schemas.py)
-                     Runs the agent(s) on Microsoft Foundry and exposes /api/chat, /api/triage, /api/health.
+                     Runs the agent on Microsoft Foundry and exposes /api/chat and /api/health.
   frontend/          Vite + React + TypeScript chat UI (src/)
                      Calls the backend's /api/chat endpoint.
 labs/
