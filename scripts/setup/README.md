@@ -44,6 +44,16 @@ service. Set `FOUNDRY_LOCATION` and `DATA_LOCATION` independently before the
 first run when needed. Do not change `DATA_LOCATION` to move an already
 created storage account; use a new account name instead.
 
+## Additional notebook prerequisites
+
+The pipeline provisions the shared knowledge base, not every optional
+workshop service. Lab 7 also requires a workspace-backed Application Insights
+resource and a Foundry project connection with category `AppInsights` and
+authentication type `ApiKey`. Its credential must contain the Application
+Insights connection string. An environment variable alone does not satisfy
+the notebook's `project.telemetry.get_application_insights_connection_string()`
+lookup. Keep that value out of source control and notebook outputs.
+
 ## Licensing
 
 The three source PDFs are WHO publications under **CC BY-NC-SA 3.0 IGO**,
