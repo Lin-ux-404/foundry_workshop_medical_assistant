@@ -25,7 +25,6 @@ from azure.mgmt.storage.models import Sku as StorageSku
 from azure.mgmt.storage.models import StorageAccountCreateParameters
 
 from common import Settings, get_credential, load_settings, logger
-from telemetry import ensure_telemetry
 
 # The "serverless" search SKU and the `knowledgeRetrieval` surface (Foundry IQ /
 # knowledge bases) are preview-only and not yet in the stable azure-mgmt-search
@@ -140,6 +139,69 @@ def ensure_foundry_project(cognitive_client: CognitiveServicesManagementClient, 
     )
     poller.result()
     logger.success(f"foundry project {settings.foundry_project}")
+
+
+def ensure_telemetry(resource_client: ResourceManagementClient, settings: Settings) -> None:
+    resource_group_id = (
+        f"/subscriptions/{settings.subscription_id}/resourceGroups/{settings.resource_group}"
+    )
+    workspace_id = (
+        f"{resource_group_id}/providers/Microsoft.OperationalInsights"
+        f"/workspaces/{settings.log_analytics_workspace}"
+    )
+    insights_id = (
+        f"{resource_group_id}/providers/Microsoft.Insights/components/{settings.application_insights}"
+    )
+    resources = resource_client.resources
+    resources.begin_create_or_update_by_id(
+        workspace_id,
+        {
+            "location": settings.foundry_location,
+            "properties": {
+                "sku": {"name": "PerGB2018"},
+                "retentionInDays": 30,
+                "features": {"enableLogAccessUsingOnlyResourcePermissions": True},
+            },
+        },
+        api_version="2023-09-01",
+    ).result()
+    resources.begin_create_or_update_by_id(
+        insights_id,
+        {
+            "location": settings.foundry_location,
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web",
+                "WorkspaceResourceId": workspace_id,
+                # Lab 7's exporter uses a connection string without an Entra credential.
+                "DisableLocalAuth": False,
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled",
+            },
+        },
+        api_version="2020-02-02",
+    ).result()
+    insights = resources.get_by_id(insights_id, api_version="2020-02-02")
+    connection_string = insights.properties.get("ConnectionString")
+    if not isinstance(connection_string, str) or not connection_string.strip():
+        raise RuntimeError("Application Insights did not return a connection string.")
+
+    # Lab 7's SDK lookup needs a project connection, not just an environment variable.
+    resources.begin_create_or_update_by_id(
+        f"{settings.project_resource_id}/connections/{settings.app_insights_connection_name}",
+        {
+            "properties": {
+                "category": "AppInsights",
+                "authType": "ApiKey",
+                "target": insights_id,
+                "isSharedToAll": True,
+                "credentials": {"key": connection_string},
+                "metadata": {"ResourceId": insights_id},
+            },
+        },
+        api_version="2025-10-01-preview",
+    ).result()
+    logger.success(f"Application Insights {settings.application_insights} connected to Foundry")
 
 
 def resolve_model_version(
