@@ -58,7 +58,7 @@ and additional permissions.
 ## Prerequisites
 
 - Python 3.11+ and Node 18+
-- An Azure AI Foundry project with a deployed chat model (the current workshop uses `gpt-5.6-terra`)
+- An Azure AI Foundry project with a deployed `gpt-5.4-mini` chat model
 - Azure CLI: run `az login` (the backend uses `DefaultAzureCredential`, no API keys)
 
 ## Run the backend
