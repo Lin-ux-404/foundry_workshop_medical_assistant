@@ -48,12 +48,13 @@ reused by the later grounded-agent and live RAG labs.
 Labs 3, 4, 6, 7, 12 and 13 use a knowledge base built from three published WHO
 clinical guidelines. Labs 6, 9 and 10 use synthetic hospital IPC data or its
 tool contracts. Labs 12 and 13 share a versioned evaluation benchmark and
-deterministic helper module. `scripts/medical_kb/` builds the knowledge base
+deterministic helper module. `scripts/setup/` builds the knowledge base
 and is safe to rerun - see
-[`scripts/medical_kb/README.md`](scripts/medical_kb/README.md).
+[`scripts/setup/README.md`](scripts/setup/README.md).
 
-See [`labs/day_2/README.md`](labs/day_2/README.md) for the evaluation learning
-path, expected artifacts, preview fallbacks and additional permissions.
+Follow the Day 2 notebooks in the order above for the evaluation learning
+path. Each notebook describes its expected artifacts, preview fallbacks
+and additional permissions.
 
 ## Prerequisites
 
