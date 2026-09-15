@@ -1,6 +1,6 @@
 # Workshop glossary
 
-Plain-language definitions for the medical assistant workshop. Use this as a
+Plain-language definitions of the workshop's technical terms. Use this as a
 lookup while working through the labs; you do not need to learn every term first.
 
 | Section | Look here for |
@@ -14,7 +14,6 @@ lookup while working through the labs; you do not need to learn every term first
 | [Evaluation design](#evaluation-design) | Benchmarks, baselines, regression cases and judge inputs |
 | [Quality measures](#quality-measures) | Retrieval metrics, groundedness, completeness and tool scores |
 | [Repeats, performance and cost](#repeats-performance-and-cost) | Medians, p95, latency, usage and release gates |
-| [Medical workshop context](#medical-workshop-context) | WHO, IPC and synthetic hospital data |
 
 ## Models and agents
 
@@ -176,15 +175,5 @@ benchmark, not a universal definition of relevant evidence.
 | Latency / p95 latency | Latency is elapsed time; p95 is the time at or below which 95% of observed durations fall. | The helper uses nearest rank. With three samples, p95 is the slowest sample, not a reliable production estimate. |
 | Usage / cost estimate | Usage counts consumed tokens and requests; an estimate applies supplied prices to them. | Missing prices mean unknown cost, not free usage. An estimate is not an Azure bill. |
 | Quota / rate limit | Quota bounds allocated capacity; rate limits restrict requests or tokens over time. | Available quota and regional service capacity are separate constraints. |
-
-## Medical workshop context
-
-| Term | Meaning | Important boundary |
-| --- | --- | --- |
-| WHO | World Health Organization, the publisher of the indexed guidelines. | Check the source publication rather than treating generated text as WHO guidance. |
-| IPC | Infection prevention and control. | The workshop uses WHO IPC guidance and fictional ward assessments. |
-| HAI | Health care-associated infection. | A synthetic ward score does not establish patient infections or causation. |
-| Synthetic data | Invented data used for learning and testing. | Ward scores and bookings are not real patient or hospital records. |
-| Self-assessment score | A reported measure of how a facility assesses its own practices. | It is not a diagnosis, patient outcome or independently verified compliance finding. |
 
 For the learning sequence, see the [workshop lab list](README.md#labs).
