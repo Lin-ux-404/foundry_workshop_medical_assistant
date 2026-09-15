@@ -38,6 +38,12 @@ avoid collisions; override `STORAGE_ACCOUNT`, `SEARCH_SERVICE`, or
 (or resource group); every other script only needs the roles
 `01_assign_roles.py` grants.
 
+Region availability is service-specific: a region with available model quota
+may not support the configured Search SKU or have capacity for a new Search
+service. Set `FOUNDRY_LOCATION` and `DATA_LOCATION` independently before the
+first run when needed. Do not change `DATA_LOCATION` to move an already
+created storage account; use a new account name instead.
+
 ## Licensing
 
 The three source PDFs are WHO publications under **CC BY-NC-SA 3.0 IGO**,
