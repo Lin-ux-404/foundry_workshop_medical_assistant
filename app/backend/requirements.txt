@@ -1,4 +1,4 @@
-# Microsoft Agent Framework (Foundry client lives in agent_framework.azure).
+# Microsoft Agent Framework (Foundry client lives in agent_framework.foundry).
 # The framework is in active preview - if a plain install cannot find it, use:
 #   pip install --pre agent-framework
 agent-framework

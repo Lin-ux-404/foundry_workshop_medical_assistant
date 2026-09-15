@@ -332,10 +332,7 @@ def kb_retrieval_client(settings: Settings):
     )
 
 
-# The exact set of placeholders search_objects/*.json templates use, mirroring
-# the explicit var list `config.sh` used to pass to `envsubst` -- restricting
-# substitution to names this pipeline owns so a stray ${...} elsewhere in a
-# payload is never accidentally replaced.
+# Limit substitution to known placeholders in the Search templates.
 def _template_values(settings: Settings) -> dict[str, str]:
     return {
         "SUBSCRIPTION_ID": settings.subscription_id,
@@ -362,9 +359,7 @@ def _template_values(settings: Settings) -> dict[str, str]:
 def render_template(path: Path, settings: Settings) -> dict[str, Any]:
     """Load a search-object JSON template and substitute its ``${VAR}`` placeholders.
 
-    This replaces the old bash `render()` (an `envsubst` call): the result is a
-    plain dict matching the REST wire format, which the `azure-search-documents`
-    clients accept directly in place of a typed model instance.
+    Return a dictionary in the REST format accepted by the Search SDK.
     """
     values = _template_values(settings)
     text = path.read_text(encoding="utf-8")

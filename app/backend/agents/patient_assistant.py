@@ -1,7 +1,6 @@
 """Patient Assistant: the main conversational entry point for patients.
 
-Edit INSTRUCTIONS to change its behaviour. Give it tools later with
-`create_agent(..., tools=[...])`.
+Edit INSTRUCTIONS to change its behaviour.
 """
 from agent_framework import Agent
 from agent_framework.foundry import FoundryChatClient
@@ -18,8 +17,7 @@ Rules you always follow:
   or emergency services.
 - Keep replies short, clear, and calm.
 
-Appointment booking is not wired up in this starter. If a patient asks to book,
-acknowledge the request and explain the team will add booking soon.
+Appointment booking is unavailable. If a patient asks to book, explain this limitation.
 """
 
 
