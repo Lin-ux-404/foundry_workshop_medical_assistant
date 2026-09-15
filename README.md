@@ -28,6 +28,8 @@ Work through the notebooks in `labs/` to learn Foundry through independent
 examples. Each runs from a fresh kernel. Lab 3 introduces the knowledge base
 reused by the later grounded-agent and live RAG labs.
 
+Use the table-based [workshop glossary](GLOSSARY.md) to look up terms as you go.
+
 | Notebook | Topic |
 | --- | --- |
 | `day_1/01_deploy_a_model.ipynb` | Deploy a model, call the Responses API |
