@@ -482,7 +482,7 @@ def estimate_cost_usd(
     return {
         "estimated_cost_usd": round(sum(configured), 8) if configured else None,
         "components_usd": components,
-        "rates_complete": all(rate is not None for rate in rates.values()),
+        "rates_complete": all(rate is not None for _, rate, _ in inputs.values()),
     }
 
 
