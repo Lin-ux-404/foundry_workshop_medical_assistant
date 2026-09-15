@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the WHO knowledge base (chunks, metadata, retrieval) and Lab 7 telemetry links."""
+"""Verify the WHO medical knowledge base end to end (chunks, metadata, and retrieval)."""
 
 from __future__ import annotations
 
@@ -7,10 +7,8 @@ import sys
 from collections import Counter
 
 from azure.core.exceptions import HttpResponseError
-from azure.mgmt.resource.resources import ResourceManagementClient
 
-from common import Settings, documents_manifest, get_credential, kb_retrieval_client, load_settings, logger, search_client, search_indexer_client
-from telemetry import verify_telemetry
+from common import Settings, documents_manifest, kb_retrieval_client, load_settings, logger, search_client, search_indexer_client
 
 QUESTIONS = {
     "who-hearts-d-diabetes.pdf": "What HbA1c and fasting plasma glucose thresholds does WHO use to diagnose type 2 diabetes, and which medicine is first-line treatment?",
@@ -163,15 +161,6 @@ def check_retrieval(settings: Settings, documents: list[dict]) -> None:
             fail(f"{doc['file']}: expected document not among cited titles {sorted(cited_count)}")
 
 
-def check_telemetry(settings: Settings) -> None:
-    logger.info("[4] telemetry infrastructure")
-    try:
-        with ResourceManagementClient(get_credential(), settings.subscription_id) as resource_client:
-            verify_telemetry(resource_client, settings)
-    except (HttpResponseError, RuntimeError) as exc:
-        fail(f"telemetry verification failed: {exc}")
-
-
 def main() -> None:
     settings = load_settings()
     documents = documents_manifest()
@@ -179,7 +168,6 @@ def main() -> None:
     check_indexer(settings, documents)
     check_chunks(settings, documents)
     check_retrieval(settings, documents)
-    check_telemetry(settings)
 
     logger.info("=" * 70)
     if failures:
