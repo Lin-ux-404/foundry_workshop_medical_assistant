@@ -54,6 +54,10 @@ Insights connection string. An environment variable alone does not satisfy
 the notebook's `project.telemetry.get_application_insights_connection_string()`
 lookup. Keep that value out of source control and notebook outputs.
 
+Lab 5 creates its own temporary account-level RAI policy and requires
+permission to manage that policy. Do not assume a new deployment's default
+policy includes the same controls as another environment.
+
 ## Licensing
 
 The three source PDFs are WHO publications under **CC BY-NC-SA 3.0 IGO**,
