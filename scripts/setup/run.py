@@ -38,7 +38,7 @@ def main() -> None:
         "--skip-provision",
         action="store_true",
         help="Skip 00_provision_infra.py, e.g. when the storage account, search "
-        "service, and Foundry project already exist.",
+        "service, Foundry project, and connected telemetry infrastructure already exist.",
     )
     args = parser.parse_args()
 

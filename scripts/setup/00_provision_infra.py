@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Provision the resource group, storage account, search service, Foundry account/project, and model deployments (safe to rerun)."""
+"""Provision the resource group, storage, Search, Foundry, telemetry, and model deployments (safe to rerun)."""
 
 from __future__ import annotations
 
@@ -25,6 +25,7 @@ from azure.mgmt.storage.models import Sku as StorageSku
 from azure.mgmt.storage.models import StorageAccountCreateParameters
 
 from common import Settings, get_credential, load_settings, logger
+from telemetry import ensure_telemetry
 
 # The "serverless" search SKU and the `knowledgeRetrieval` surface (Foundry IQ /
 # knowledge bases) are preview-only and not yet in the stable azure-mgmt-search
@@ -235,6 +236,9 @@ def main() -> None:
     ensure_foundry_account(cognitive_client, settings)
     logger.info(f"Provisioning Foundry project {settings.foundry_project}...")
     ensure_foundry_project(cognitive_client, settings)
+
+    logger.info("Provisioning telemetry and connecting it to Foundry...")
+    ensure_telemetry(resource_client, settings)
 
     logger.info("Provisioning model deployments...")
     ensure_deployment(

@@ -1,8 +1,9 @@
 # Python SDK dependencies for the WHO medical knowledge base pipeline scripts.
 #
 # Auth is Microsoft Entra only (DefaultAzureCredential); run `az login` first
-# so the Azure CLI credential fallback has a session to use. No keys or
-# connection strings are read, stored, or printed anywhere in this pipeline.
+# so the Azure CLI credential fallback has a session to use. The telemetry
+# setup reads the Application Insights connection string into memory and
+# stores it in a Foundry project connection, never in local files or logs.
 
 azure-identity
 

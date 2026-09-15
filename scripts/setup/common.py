@@ -104,10 +104,12 @@ class Settings:
     foundry_account: str
     foundry_endpoint: str
     foundry_project: str
+    telemetry_location: str
+    log_analytics_workspace: str
+    application_insights: str
+    app_insights_connection_name: str
 
-    # Provisioning-only settings (00_provision_infra.py). Everything below is
-    # unused once the resources already exist, so these are safe to ignore for
-    # the rest of the pipeline.
+    # Infrastructure provisioning settings.
     data_location: str
     foundry_location: str
     search_sku: str
@@ -162,6 +164,24 @@ class Settings:
         return f"{self.foundry_account_resource_id}/projects/{self.foundry_project}"
 
     @property
+    def log_analytics_resource_id(self) -> str:
+        return (
+            f"/subscriptions/{self.subscription_id}/resourceGroups/{self.resource_group}"
+            f"/providers/Microsoft.OperationalInsights/workspaces/{self.log_analytics_workspace}"
+        )
+
+    @property
+    def application_insights_resource_id(self) -> str:
+        return (
+            f"/subscriptions/{self.subscription_id}/resourceGroups/{self.resource_group}"
+            f"/providers/Microsoft.Insights/components/{self.application_insights}"
+        )
+
+    @property
+    def app_insights_connection_resource_id(self) -> str:
+        return f"{self.project_resource_id}/connections/{self.app_insights_connection_name}"
+
+    @property
     def mcp_target(self) -> str:
         return (
             f"{self.search_endpoint}/knowledgebases/{self.knowledge_base}/mcp"
@@ -213,6 +233,18 @@ def load_settings() -> Settings:
         foundry_account=foundry_account,
         foundry_endpoint=foundry_endpoint,
         foundry_project=foundry_project,
+        telemetry_location=os.environ.get(
+            "TELEMETRY_LOCATION", os.environ.get("FOUNDRY_LOCATION", "swedencentral")
+        ),
+        log_analytics_workspace=os.environ.get(
+            "LOG_ANALYTICS_WORKSPACE", f"umc-workshop-logs{suffix}"
+        ),
+        application_insights=os.environ.get(
+            "APPLICATION_INSIGHTS", f"umc-workshop-insights{suffix}"
+        ),
+        app_insights_connection_name=os.environ.get(
+            "APP_INSIGHTS_CONNECTION_NAME", "workshop-appinsights"
+        ),
         data_location=os.environ.get("DATA_LOCATION", "switzerlandnorth"),
         foundry_location=os.environ.get("FOUNDRY_LOCATION", "swedencentral"),
         search_sku=os.environ.get("SEARCH_SKU", "serverless"),
