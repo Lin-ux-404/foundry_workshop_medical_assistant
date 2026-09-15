@@ -58,6 +58,10 @@ Lab 5 creates its own temporary account-level RAI policy and requires
 permission to manage that policy. Do not assume a new deployment's default
 policy includes the same controls as another environment.
 
+Lab 11's cloud red-team path is opt-in and requires a supported Foundry
+region and a reviewed, enabled risk taxonomy. Review the generated taxonomy
+before enabling the cloud run; the local tests do not replace that step.
+
 ## Licensing
 
 The three source PDFs are WHO publications under **CC BY-NC-SA 3.0 IGO**,
