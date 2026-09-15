@@ -16,7 +16,7 @@ app/
   frontend/          Vite + React + TypeScript chat UI (src/)
                      Calls the backend's /api/chat endpoint.
 labs/
-  day_1/ day_2/ day_3/   Foundry notebooks, one per topic (see below).
+  day_1/ day_2/         Foundry notebooks, one per topic (see below).
   data/                  Datasets used by the labs (WHO guidelines, hospital IPC data).
 scripts/
   setup/             Provisions the Azure environment (Search, Storage, Foundry) and the knowledge base the labs query.
@@ -43,7 +43,6 @@ reused by the later grounded-agent and live RAG labs.
 | `day_2/11_red_team_security_testing.ipynb` | Local policy-abuse tests and optional cloud red teaming |
 | `day_2/12_end_to_end_search_rag_evaluation.ipynb` | Live Azure AI Search RAG evaluation |
 | `day_2/13_end_to_end_foundry_iq_evaluation.ipynb` | Repeated live Foundry IQ RAG evaluation |
-| `day_3/README.md` | Application guide for `app/backend/` and `app/frontend/` |
 
 Labs 3, 4, 6, 7, 12 and 13 use a knowledge base built from three published WHO
 clinical guidelines. Labs 6, 9 and 10 use synthetic hospital IPC data or its
