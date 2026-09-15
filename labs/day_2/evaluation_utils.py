@@ -201,8 +201,8 @@ def validate_cited_answer(
     required_set = set(required)
 
     raw_claims = value.get("claims")
-    if not isinstance(raw_claims, list) or not raw_claims:
-        raise ValueError("A cited answer needs at least one claim")
+    if not isinstance(raw_claims, list):
+        raise ValueError("claims must be an array")
     raw_insufficient = value.get("insufficient_evidence", [])
     if not isinstance(raw_insufficient, list) or not all(
         isinstance(item, str) for item in raw_insufficient
@@ -265,13 +265,13 @@ def validate_cited_answer(
         "answered_answer_part_ids": [part_id for part_id in required if part_id in answered],
         "insufficient_evidence": insufficient,
         "answer_part_coverage": len(answered) / len(required),
-        "citation_coverage": cited_claims / len(claims),
+        "citation_coverage": cited_claims / len(claims) if claims else 0.0,
         "citation_validity": (
             (len(all_citations) - len(invalid_citations)) / len(all_citations)
             if all_citations
             else 0.0
         ),
-        "valid_citation_coverage": validly_cited_claims / len(claims),
+        "valid_citation_coverage": validly_cited_claims / len(claims) if claims else 0.0,
         "invalid_citations": sorted(set(invalid_citations)),
     }
 
@@ -285,6 +285,12 @@ def render_cited_answer(validation: Mapping[str, Any]) -> str:
             for citation in claim["citation_ids"]
         )
         lines.append(f"- {claim['text']} {citations}")
+    if validation["insufficient_evidence"]:
+        lines.append(
+            "Insufficient evidence for answer parts: "
+            + ", ".join(validation["insufficient_evidence"])
+            + "."
+        )
     return "\n".join(lines)
 
 
