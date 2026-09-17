@@ -39,9 +39,9 @@ Use the table-based [workshop glossary](GLOSSARY.md) to look up terms as you go.
 | `day_1/04_tools.ipynb` | Function tools, tool-call round trip, approvals |
 | `day_1/05_tool_call_regression.ipynb` | Exact and semantic tool-call regression testing |
 | `day_2/06_agent_framework_orchestration.ipynb` | Orchestrate a sequential multi-agent workflow |
-| `day_2/07_orchestration_sequential.ipynb` | Sequential orchestration pattern (placeholder) |
-| `day_2/08_orchestration_concurrent.ipynb` | Concurrent orchestration pattern (placeholder) |
-| `day_2/09_orchestration_magentic.ipynb` | Magentic orchestration pattern (placeholder) |
+| `day_2/07_orchestration_sequential.ipynb` | Sequential orchestration pattern with `SequentialBuilder` |
+| `day_2/08_orchestration_concurrent.ipynb` | Concurrent orchestration pattern with `ConcurrentBuilder` |
+| `day_2/09_orchestration_magentic.ipynb` | Magentic orchestration pattern with `MagenticBuilder` |
 | `day_2/10_guardrails.ipynb` | Create an account guardrail, assign it to an agent, test and clean up |
 | `day_3/11_evaluations_in_foundry.ipynb` | OpenTelemetry tracing and privacy-safe observability |
 | `day_3/12_grounded_answer_evaluation.ipynb` | Retrieval, groundedness and relevance evaluation |
