@@ -34,10 +34,10 @@ provisioning; changing a setting does not move existing resources.
 Names get a resource-group suffix outside `umc-dev` to reduce collisions.
 Use the name overrides in `common.py` to reuse existing resources.
 
-## Telemetry for Lab 7
+## Telemetry for Lab 11
 
 Setup creates Log Analytics (30-day workspace retention), Application Insights,
-and the Foundry connection needed by Lab 7. To reuse existing telemetry, set
+and the Foundry connection needed by Lab 11. To reuse existing telemetry, set
 `LOG_ANALYTICS_WORKSPACE`, `APPLICATION_INSIGHTS`, and `APP_INSIGHTS_CONNECTION_NAME`.
 
 The connection string is stored in Foundry, never in local files or logs.
@@ -46,7 +46,7 @@ setup does not disable service-side content recording. Telemetry charges apply.
 
 ## Additional notebook prerequisites
 
-Lab 5 needs permission to manage guardrail policies. Lab 11's cloud red-team
+Lab 10 needs permission to manage guardrail policies. The Extras red-team
 run is opt-in and needs a supported region and a reviewed, enabled risk taxonomy.
 
 ## Licensing

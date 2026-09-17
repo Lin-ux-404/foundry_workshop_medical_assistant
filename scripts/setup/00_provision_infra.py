@@ -173,7 +173,7 @@ def ensure_telemetry(resource_client: ResourceManagementClient, settings: Settin
             "properties": {
                 "Application_Type": "web",
                 "WorkspaceResourceId": workspace_id,
-                # Lab 7's exporter uses a connection string without an Entra credential.
+                # Lab 11's exporter uses a connection string without an Entra credential.
                 "DisableLocalAuth": False,
                 "publicNetworkAccessForIngestion": "Enabled",
                 "publicNetworkAccessForQuery": "Enabled",
@@ -186,7 +186,7 @@ def ensure_telemetry(resource_client: ResourceManagementClient, settings: Settin
     if not isinstance(connection_string, str) or not connection_string.strip():
         raise RuntimeError("Application Insights did not return a connection string.")
 
-    # Lab 7's SDK lookup needs a project connection, not just an environment variable.
+    # Lab 11's SDK lookup needs a project connection, not just an environment variable.
     resources.begin_create_or_update_by_id(
         f"{settings.project_resource_id}/connections/{settings.app_insights_connection_name}",
         {

@@ -61,7 +61,6 @@ def main() -> None:
             ["--reset"] if args.reset_indexer else [],
         ),
         ("05_connect_kb_to_foundry.py", "connect the knowledge base to Foundry", []),
-        ("06_verify.py", "verify", []),
     ]
     if args.skip_provision:
         steps = steps[1:]
