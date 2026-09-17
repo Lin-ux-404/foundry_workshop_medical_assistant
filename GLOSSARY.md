@@ -67,7 +67,7 @@ lookup while working through the labs; you do not need to learn every term first
 | Foundry IQ | Managed knowledge retrieval used to ground agents in connected sources. | The workshop accesses it through an Azure AI Search knowledge base. |
 | Agentic retrieval | Model-assisted planning and execution of searches for a question. | May split a question into several subqueries. |
 | Generation context | The exact evidence supplied to the answer model. | An expected publication may be found without every needed fact reaching this context. |
-| `extractiveData` | A knowledge-base output mode that returns evidence instead of writing the final answer. | Lab 13 uses a separate model to answer from that evidence. |
+| `extractiveData` | A knowledge-base output mode that returns evidence instead of writing the final answer. | Lab 15 uses a separate model to answer from that evidence. |
 | Reference / citation | A reference identifies a source; a citation links a claim to supporting material. | `[S1]` labels Search context; `ref_id` identifies an IQ reference within a response. Valid IDs do not prove claims are supported. |
 | Publication filter | A retrieval condition limiting results to a publication. | The IQ benchmark uses `publication_id` to control the source. It does not test unfiltered source selection. |
 
@@ -91,7 +91,7 @@ lookup while working through the labs; you do not need to learn every term first
 | Term | Meaning | In this workshop |
 | --- | --- | --- |
 | Guardrail | A runtime safety policy applied to a deployment or agent. | It can detect or block configured risks, but does not prove factual correctness. |
-| RAI policy | The Azure resource storing a Responsible AI guardrail configuration. | Lab 5 creates a custom policy at account scope. |
+| RAI policy | The Azure resource storing a Responsible AI guardrail configuration. | Lab 10 creates a custom policy at account scope. |
 | Control | One configured check within a guardrail. | Defines what to inspect and whether to block it. Inspect actual settings rather than assuming defaults. |
 | Indirect attack | An instruction hidden in content the assistant reads, rather than in the user's direct request. | A retrieved document might try to redirect the assistant. |
 | Safety annotation | Response metadata describing a safety detection or filtering decision. | Different from a source citation. |
@@ -134,7 +134,7 @@ lookup while working through the labs; you do not need to learn every term first
 | Answer contract | The required answer parts and citation rules declared before generation. | The generator must answer each part from evidence or mark it unsupported. |
 | Baseline | The original behavior or scores retained for comparison. | Keep failing examples when evaluating a repaired copy. |
 | Regression case / known-bad case | A case kept to catch behavior changes; a known-bad case is deliberately incorrect. | The wrong-ward example must fail before its repair. |
-| Oracle | The expected result used by an exact test. | The expected tool name and complete arguments in Lab 10. |
+| Oracle | The expected result used by an exact test. | The expected tool name and complete arguments in Lab 5. |
 | Normalization | Removing irrelevant representation differences before comparison. | Ignore transport IDs, not tool arguments or call order. |
 | Trajectory | The ordered request, tool calls, results and final answer. | An acceptable final sentence can hide an unauthorized earlier action. |
 | No-tool case | A case where the correct behavior is to make no tool call. | Protects against unnecessary reads or writes. |
