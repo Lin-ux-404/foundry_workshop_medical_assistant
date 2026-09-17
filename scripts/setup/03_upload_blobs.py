@@ -8,7 +8,7 @@ import sys
 from azure.core.exceptions import ResourceExistsError
 from azure.storage.blob import BlobServiceClient, ContentSettings
 
-from common import documents_manifest, get_credential, load_settings, logger
+from common import documents_manifest, get_credential, load_settings, logger, retry_on_transient_error
 
 METADATA_FIELDS = [
     "document_title",
@@ -31,10 +31,17 @@ def main() -> None:
     container = service.get_container_client(settings.blob_container)
 
     logger.info(f"container {settings.blob_container} in {settings.storage_account}")
-    try:
-        container.create_container()
-    except ResourceExistsError:
-        pass
+
+    def _create_container() -> None:
+        try:
+            container.create_container()
+        except ResourceExistsError:
+            pass  # already exists -- not a transient error, don't retry
+
+    # 01_assign_roles.py may have just granted this identity's Storage Blob
+    # Data Contributor role moments ago; that grant can take a while to
+    # propagate through Microsoft Entra, so a fresh role can 403 here.
+    retry_on_transient_error(_create_container)
 
     for doc in documents:
         file_name = doc["file"]
@@ -43,14 +50,20 @@ def main() -> None:
             sys.exit(f"missing {path} - run 02_download_docs.py")
 
         metadata = {field: str(doc[field]) for field in METADATA_FIELDS}
-        with path.open("rb") as fh:
-            container.upload_blob(
-                name=file_name,
-                data=fh,
-                overwrite=True,
-                metadata=metadata,
-                content_settings=ContentSettings(content_type="application/pdf"),
-            )
+
+        def _upload_blob() -> None:
+            with path.open("rb") as fh:
+                container.upload_blob(
+                    name=file_name,
+                    data=fh,
+                    overwrite=True,
+                    metadata=metadata,
+                    content_settings=ContentSettings(content_type="application/pdf"),
+                )
+
+        # Reopen the file on every attempt so a retry re-reads from the start
+        # instead of resuming a stream that a failed request already advanced.
+        retry_on_transient_error(_upload_blob)
         logger.success(file_name)
 
 

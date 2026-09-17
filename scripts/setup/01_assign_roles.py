@@ -101,6 +101,10 @@ def main() -> None:
         # Search service managed identity -> read blobs, call the embedding/chat deployments.
         (search_mi, "ServicePrincipal", "Storage Blob Data Reader", storage_scope, "search MI -> Storage Blob Data Reader"),
         (search_mi, "ServicePrincipal", "Cognitive Services User", foundry_scope, "search MI -> Cognitive Services User"),
+        # Search service managed identity -> query its own index (needed server-side by the
+        # knowledge base's /retrieve, which authenticates back into the index via the
+        # service's own identity rather than the caller's).
+        (search_mi, "ServicePrincipal", "Search Index Data Reader", search_scope, "search MI -> Search Index Data Reader"),
         # Foundry project managed identity -> call the knowledge base's /retrieve over MCP.
         (project_mi, "ServicePrincipal", "Search Index Data Reader", search_scope, "project MI -> Search Index Data Reader"),
         # Operator -> manage search objects, upload blobs, and call /retrieve.
