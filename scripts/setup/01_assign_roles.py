@@ -7,6 +7,7 @@ from uuid import uuid4
 
 import requests
 from azure.mgmt.authorization import AuthorizationManagementClient
+from azure.mgmt.cognitiveservices import CognitiveServicesManagementClient
 from azure.mgmt.resource.resources import ResourceManagementClient
 from azure.mgmt.search import SearchManagementClient
 
@@ -90,6 +91,17 @@ def main() -> None:
         settings.project_resource_id, api_version=PROJECT_API_VERSION
     ).identity.principal_id
 
+    # The Foundry *account* (not the project) has its own system-assigned
+    # identity, distinct from both the project's and the search service's.
+    # Knowledge base retrieval routes its per-source index queries through
+    # this identity, not the project's or the search service's own -- without
+    # this role, /retrieve fails with "Failed to query search index" even
+    # though the same caller can query the index directly.
+    cognitive_client = CognitiveServicesManagementClient(credential, settings.subscription_id)
+    foundry_account_mi = cognitive_client.accounts.get(
+        settings.resource_group, settings.foundry_account
+    ).identity.principal_id
+
     me = signed_in_user_id()
 
     storage_scope = settings.storage_resource_id
@@ -105,6 +117,10 @@ def main() -> None:
         # knowledge base's /retrieve, which authenticates back into the index via the
         # service's own identity rather than the caller's).
         (search_mi, "ServicePrincipal", "Search Index Data Reader", search_scope, "search MI -> Search Index Data Reader"),
+        # Foundry account managed identity -> query the index during knowledge base
+        # retrieval (/retrieve routes its per-source searchIndex queries through the
+        # Foundry account's own identity, not the project's or the search service's).
+        (foundry_account_mi, "ServicePrincipal", "Search Index Data Reader", search_scope, "foundry account MI -> Search Index Data Reader"),
         # Foundry project managed identity -> call the knowledge base's /retrieve over MCP.
         (project_mi, "ServicePrincipal", "Search Index Data Reader", search_scope, "project MI -> Search Index Data Reader"),
         # Operator -> manage search objects, upload blobs, and call /retrieve.
