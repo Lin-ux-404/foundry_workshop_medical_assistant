@@ -1,4 +1,4 @@
-"""FastAPI application for the Agentic Medical Operations Assistant (starter).
+"""FastAPI application for the Agentic Medical Operations Assistant (Magentic orchestration).
 
 Run from the `app/backend/` folder:
     uvicorn main:app --reload
@@ -9,15 +9,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import get_settings
-from clients import create_credential, create_foundry_client
+from clients import create_credential
+from clients.foundry_team import FoundryTeam
 from routers import chat, health
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # One credential + client for the whole app lifetime.
-    credential = create_credential()
-    client = create_foundry_client(credential)
+    credential = create_credential() if get_settings().azure_ai_project_endpoint else None
+    client = FoundryTeam(credential) if credential else None
     app.state.foundry_client = client
     app.state.credential = credential
     try:

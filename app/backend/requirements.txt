@@ -1,12 +1,14 @@
-# Microsoft Agent Framework (Foundry client lives in agent_framework.foundry).
-# The framework is in active preview - if a plain install cannot find it, use:
-#   pip install --pre agent-framework
-agent-framework
-azure-identity
+# Match the working Magentic notebook's framework versions.
+agent-framework-core==1.16.0
+agent-framework-openai==1.14.1
+agent-framework-foundry==1.11.0
+agent-framework-orchestrations==1.1.1
+azure-ai-projects==2.3.0
+openai==2.54.0
+azure-identity>=1.25.3,<2
 
-# API
-fastapi
-uvicorn[standard]
-pydantic
-pydantic-settings
-python-dotenv
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1
+pydantic>=2,<3
+pydantic-settings>=2,<3
+python-dotenv>=1,<2
